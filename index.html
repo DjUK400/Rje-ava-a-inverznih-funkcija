@@ -1,0 +1,1619 @@
+<!doctype html>
+<html lang="sr-Latn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Rješavač inverznih funkcija</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Raspored: list papira za kolokvijum. Uska kolona sa postupkom, grafici na milimetarskoj mreži; f plavo, f⁻¹ crveno, y = x sivo. */
+:root{
+  --bg:#e9edeb;--paper:#fbfcfa;--ink:#16202a;--ink-2:#4b5761;--rule:#c8d1ce;
+  --grid:#e4eae7;--grid-5:#ccd7d3;--f:#1c5aa8;--fi:#b33a28;--diag:#7a878d;--ghost:#9aa7ad;
+  --err:#a8261c;--err-bg:#fbeceA;--warn:#8a5a00;--info:#1c5aa8;--ok:#1f6e44;--chip:#eef2f0;
+  --f-head:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --f-math:"STIX Two Text","Times New Roman",Times,serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1215;--paper:#151a1e;--ink:#e2e7e5;--ink-2:#a1acb1;--rule:#2b353a;
+  --grid:#1b2226;--grid-5:#263035;--f:#7cb0f2;--fi:#f2907b;--diag:#87949a;--ghost:#5e6b71;
+  --err:#ff8f80;--err-bg:#2c1714;--warn:#f0b75a;--info:#7cb0f2;--ok:#6fcf98;--chip:#1c2327;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1215;--paper:#151a1e;--ink:#e2e7e5;--ink-2:#a1acb1;--rule:#2b353a;
+  --grid:#1b2226;--grid-5:#263035;--f:#7cb0f2;--fi:#f2907b;--diag:#87949a;--ghost:#5e6b71;
+  --err:#ff8f80;--err-bg:#2c1714;--warn:#f0b75a;--info:#7cb0f2;--ok:#6fcf98;--chip:#1c2327;color-scheme:dark}
+
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+.page{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 56px}
+.eyebrow{font-family:var(--f-head);font-weight:600;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);margin:0 0 4px}
+h1{font-family:var(--f-head);font-weight:700;font-size:clamp(28px,7vw,42px);line-height:1.05;margin:0 0 8px;text-wrap:balance}
+.lede{margin:0 0 18px;max-width:64ch;color:var(--ink-2)}
+.h3{font-family:var(--f-head);font-weight:700;font-size:20px;line-height:1.2;margin:0 0 10px;display:flex;align-items:baseline;gap:10px;text-wrap:balance}
+.no{font-variant-numeric:tabular-nums;font-size:14px;min-width:24px;height:24px;display:inline-grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;flex:none;transform:translateY(-2px)}
+sup{font-size:.7em;line-height:0;vertical-align:.45em}
+
+/* kartice i navigacija */
+.tabs{display:flex;gap:6px;margin:0 0 18px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap}
+.tabs a{font-family:var(--f-head);font-weight:600;font-size:16px;letter-spacing:.02em;color:var(--ink-2);text-decoration:none;padding:8px 12px 7px;border:1.5px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;margin-bottom:-1.5px}
+.tabs a[aria-selected="true"]{color:var(--ink);background:var(--paper);border-color:var(--ink)}
+.tabs a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--f);outline-offset:2px}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:4px}
+
+/* unos */
+.inbox{padding:14px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-bottom:12px}
+.inrow{display:flex;gap:8px;align-items:stretch}
+.inrow label{font-family:var(--f-math);font-style:italic;font-size:20px;align-self:center;white-space:nowrap}
+#fx{flex:1 1 0;width:0;min-width:0;font:20px var(--f-math);color:var(--ink);background:var(--bg);border:1.5px solid var(--ink-2);border-radius:4px;padding:8px 10px}
+.btn{font:600 16px var(--f-body);cursor:pointer;border-radius:4px;padding:8px 16px;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.keys{display:flex;flex-wrap:wrap;gap:6px}
+.key{font:17px var(--f-math);min-width:44px;min-height:38px;padding:4px 10px;border-radius:4px;border:1px solid var(--rule);background:var(--chip);color:var(--ink);cursor:pointer}
+.key.w{font-family:var(--f-body);font-size:14px}
+.exs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--ink-2)}
+.ex{font:15px var(--f-math);padding:3px 9px;border-radius:999px;border:1px dashed var(--ink-2);background:transparent;color:var(--ink);cursor:pointer}
+.rec{font-size:13.5px;color:var(--ink-2);margin:0 0 14px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.banner{border:1.5px solid var(--err);background:var(--err-bg);color:var(--ink);border-radius:4px;padding:12px 14px;margin:0 0 16px}
+.banner b{color:var(--err);font-family:var(--f-head);font-size:18px}
+.banner p{margin:4px 0 0}.banner .sub{color:var(--ink-2);font-size:14px}
+
+/* matematika */
+.m{font-family:var(--f-math);font-size:1.12em;line-height:1.9}
+.fn{font-style:normal}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.15;margin:0 .1em}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 .2em 1px}
+.fr>span:last-child{padding:1px .2em 0}
+.ci-t{color:var(--fi)}
+
+/* rezultat */
+.res-top{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin-bottom:26px}
+@media (min-width:860px){.res-top{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start}}
+.sumcard{padding:14px 16px}
+.sum{display:grid;grid-template-columns:auto minmax(0,1fr);margin:0;border-top:1px solid var(--rule)}
+.sum dt,.sum dd{padding:6px 0;border-bottom:1px solid var(--rule);margin:0}
+.sum dt{font-family:var(--f-math);padding-right:14px;color:var(--ink-2);font-size:17px;line-height:1.9}
+.sum dd{min-width:0;overflow-wrap:anywhere}
+.sum dd:not(.m){font-size:14.5px;align-self:center}
+.assume{margin-top:10px;font-size:14px;color:var(--ink-2)}
+.assume ul{margin:6px 0 0;padding-left:18px}
+.fig{margin:0;padding:10px;min-width:0}
+.fig figcaption{font-family:var(--f-head);font-weight:600;font-size:16px;letter-spacing:.02em;color:var(--ink-2);margin:0 0 6px}
+.fig svg{display:block;width:100%;height:auto}
+.lg{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px}
+.lg li{display:flex;align-items:center;gap:6px;min-width:0;overflow-wrap:anywhere}
+.lg svg{flex:none;width:24px;height:8px}
+.task .m{white-space:nowrap}
+.cap{margin:6px 0 0;font-size:14px;color:var(--ink-2)}
+.sec{margin:0 0 28px;max-width:760px}
+.sec>p{max-width:66ch}
+.lines{list-style:none;margin:0 0 10px;padding:0;border-left:2px solid var(--rule)}
+.lines li{padding:4px 0 8px 14px;position:relative}
+.lines li+li{border-top:1px dashed var(--rule)}
+.lines .m{font-size:1.2em;overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding-bottom:2px}
+.rule{font-size:14.5px;color:var(--ink-2);max-width:66ch}
+.why{margin-top:4px;font-size:14.5px}
+.why summary{cursor:pointer;color:var(--f);font-weight:600;display:inline-block;padding:2px 0;list-style:none}
+.why summary::-webkit-details-marker{display:none}
+.why summary::before{content:"+ ";font-family:var(--f-math)}
+.why[open] summary::before{content:"− "}
+.why p{margin:4px 0 2px;padding:8px 12px;background:var(--chip);border-radius:4px;max-width:66ch}
+.res{font-weight:600;margin:4px 0 0;padding:6px 12px;border:1.5px solid var(--ink);display:inline-block;border-radius:3px;max-width:100%;overflow-x:auto;box-sizing:border-box}
+.res .m{white-space:nowrap}
+.note{font-size:14.5px;color:var(--ink-2)}
+.tw{overflow-x:auto}
+.pts{border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:100%}
+.pts th,.pts td{text-align:left;padding:4px 14px 4px 0;border-bottom:1px solid var(--rule);white-space:nowrap}
+.pts th{font-family:var(--f-head);font-weight:600;font-size:14px;color:var(--ink-2)}
+.pts td:first-child{font-size:14px;color:var(--ink-2)}
+.stepbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:0 0 8px}
+.sb{display:flex;flex-direction:column;align-items:center;gap:1px;min-height:52px;padding:5px 2px;border-radius:4px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);cursor:pointer;font:inherit;text-align:center}
+.sb b{font-family:var(--f-head);font-size:18px;line-height:1}
+.sb span{font-size:11px;line-height:1.15;color:var(--ink-2)}
+.sb.skip{opacity:.55;border-style:dashed}
+.sb[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink);opacity:1}
+.sb[aria-pressed="true"] span{color:var(--paper)}
+.stepview{display:grid;gap:10px;grid-template-columns:minmax(0,1fr);margin-bottom:14px}
+@media (min-width:860px){.stepview{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start}}
+.stepcap p{margin:0 0 6px}
+.stepeq{font-size:1.25em}
+.pill{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;border-radius:999px;border:1px solid var(--ink-2);color:var(--ink-2)}
+.final{max-width:620px}
+.okline{color:var(--ok)}
+
+/* SVG */
+.pbg{fill:var(--paper)}
+.grid{stroke:var(--grid);stroke-width:1}
+.grid.g5{stroke:var(--grid-5)}
+.axis{stroke:var(--ink);stroke-width:1.4}
+.arrow{fill:var(--ink)}
+.axl{font:italic 18px var(--f-math);fill:var(--ink)}
+.tl{font:15px var(--f-math);fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.tick{stroke:var(--ink);stroke-width:1.2}
+.curve{fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.curve.cf{stroke:var(--f)}.curve.ci{stroke:var(--fi)}.curve.cg{stroke:var(--ghost);stroke-width:2;stroke-dasharray:6 5}
+.curve.cd{stroke:var(--diag);stroke-width:1.4;stroke-dasharray:7 5}
+.diag{stroke:var(--diag);stroke-width:1.3;stroke-dasharray:7 5}
+.asym{stroke-width:1.2;stroke-dasharray:4 4;stroke:var(--diag)}
+.asym.cf{stroke:var(--f)}.asym.ci{stroke:var(--fi)}
+.proj{stroke:var(--ink-2);stroke-width:.9;stroke-dasharray:3 3}
+.end{stroke-width:2}
+.end.cf{fill:var(--f);stroke:var(--f)}.end.ci{fill:var(--fi);stroke:var(--fi)}.end.cg{fill:var(--ghost);stroke:var(--ghost)}
+.end.hollow{fill:var(--paper)}
+.pt{fill:var(--ink)}.pt.cf{fill:var(--f)}.pt.ci{fill:var(--fi)}
+.leg text{font:14px var(--f-body);fill:var(--ink)}
+.legbg{fill:var(--paper);opacity:.88}
+
+/* vježba */
+.task{font-size:18px;max-width:66ch;margin:0 0 12px}
+.exbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.exgraphs{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin-bottom:14px}
+@media (min-width:760px){.exgraphs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+#ex-ans{max-width:620px;margin-bottom:14px}
+#ex-sol{margin-top:18px}
+
+/* pravila */
+.rules{max-width:780px}
+.rules h2{font-family:var(--f-head);font-weight:700;font-size:22px;margin:28px 0 8px;text-wrap:balance}
+.rules p,.rules li{max-width:66ch}
+.bgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:none}
+.bfig{margin:0;padding:10px}
+.bfig figcaption{font-family:var(--f-math);font-size:19px;margin-bottom:4px}
+.bfig svg{display:block;width:100%;height:auto}
+.mini{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin:8px 0 0;font-size:14px}
+.mini dt{color:var(--ink-2)}.mini dd{margin:0;font-family:var(--f-math)}
+.rt{border-collapse:collapse;width:100%;font-size:15px}
+.rt th,.rt td{text-align:left;vertical-align:top;padding:6px 12px 6px 0;border-bottom:1px solid var(--rule)}
+.rt th{font-family:var(--f-head);font-weight:600;color:var(--ink-2);font-size:14px}
+.rt td.m{white-space:nowrap;font-size:16px;line-height:1.5}
+.steps-ol{padding-left:22px}.steps-ol li{margin:4px 0}
+.err-list li{margin:4px 0}
+
+/* notifikacije */
+#toasts{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+.toast{pointer-events:auto;width:min(420px,100%);box-sizing:border-box;display:flex;gap:8px;align-items:flex-start;background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-left:5px solid var(--info);border-radius:4px;padding:10px 8px 10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);animation:tin .22s ease-out}
+.toast.t-error{border-left-color:var(--err)}.toast.t-warn{border-left-color:var(--warn)}.toast.t-ok{border-left-color:var(--ok)}
+.toast.out{opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s}
+.t-body{flex:1;min-width:0}
+.t-kind{display:block;font-family:var(--f-head);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--info)}
+.t-error .t-kind{color:var(--err)}.t-warn .t-kind{color:var(--warn)}
+.toast b{display:block;font-size:15px}
+.toast p{margin:2px 0 0;font-size:14px;color:var(--ink-2)}
+.t-x{flex:none;width:32px;height:32px;border:0;background:transparent;color:var(--ink-2);font-size:22px;line-height:1;cursor:pointer;border-radius:4px}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.toast{animation:none}.toast.out{transition:none}}
+.foot{margin-top:40px;padding-top:12px;border-top:1px solid var(--rule);font-size:13.5px;color:var(--ink-2);max-width:80ch}
+</style>
+
+</head><body>
+<div class="page">
+  <p class="eyebrow">Matematika · 1. zadatak kolokvijuma</p>
+  <h1>Rješavač inverznih funkcija</h1>
+  <p class="lede">"Skicirati datu funkciju, te odrediti i skicirati inverznu funkciju." Upiši arcus funkciju i dobićeš cijeli postupak redom: domen, kodomen, skicu korak po korak, inverz i njegovu skicu. Uz svaki korak piše koje je pravilo primijenjeno, a pod "Zašto?" i razlog.</p>
+
+  <nav class="tabs" role="tablist" aria-label="Dijelovi stranice">
+    <a id="tab-rjesavac" role="tab" href="#rjesavac" aria-selected="true">Rješavač</a>
+    <a id="tab-vjezba" role="tab" href="#vjezba" aria-selected="false">Vježba</a>
+    <a id="tab-pravila" role="tab" href="#pravila" aria-selected="false">Osnovna pravila</a>
+  </nav>
+
+  <main>
+  <section id="v-rjesavac" role="tabpanel" aria-labelledby="tab-rjesavac">
+    <form id="solve-form" class="card inbox" autocomplete="off">
+      <div class="inrow">
+        <label for="fx">f(x) =</label>
+        <input id="fx" name="fx" type="text" inputmode="text" autocapitalize="off" spellcheck="false" aria-describedby="fx-help">
+        <button class="btn" type="submit">Riješi</button>
+      </div>
+      <div class="keys" aria-label="Brzi unos">
+        <button type="button" class="key w" data-k="arcsin(">arcsin</button>
+        <button type="button" class="key w" data-k="arccos(">arccos</button>
+        <button type="button" class="key w" data-k="arctg(">arctg</button>
+        <button type="button" class="key w" data-k="arcctg(">arcctg</button>
+        <button type="button" class="key" data-k="π">π</button>
+        <button type="button" class="key" data-k="x"><i>x</i></button>
+        <button type="button" class="key" data-k="(">(</button>
+        <button type="button" class="key" data-k=")">)</button>
+        <button type="button" class="key" data-k="/">/</button>
+        <button type="button" class="key" data-k=" − ">−</button>
+        <button type="button" class="key w" data-k="del">Obriši</button>
+      </div>
+      <p id="fx-help" class="exs">Primjeri:
+        <button type="button" class="ex" data-f="2arcsin(3x − 1) + π/4">2arcsin(3x − 1) + π/4</button>
+        <button type="button" class="ex" data-f="arccos(1 − 2x)">arccos(1 − 2x)</button>
+        <button type="button" class="ex" data-f="π/2 − arctg(x/2)">π/2 − arctg(x/2)</button>
+        <button type="button" class="ex" data-f="−3arcctg(2x + 1) + 1">−3arcctg(2x + 1) + 1</button>
+      </p>
+    </form>
+    <p id="rec" class="rec" aria-live="polite"></p>
+    <div id="banner" class="banner" role="alert" hidden></div>
+    <div id="out"></div>
+  </section>
+
+  <section id="v-vjezba" role="tabpanel" aria-labelledby="tab-vjezba" hidden>
+    <p class="task" id="ex-task"></p>
+    <div class="exbar">
+      <button type="button" class="btn" id="ex-new">Novi zadatak</button>
+      <button type="button" class="btn ghost" id="ex-show" aria-expanded="false" aria-controls="ex-sol">Prikaži postupak</button>
+      <button type="button" class="btn ghost" id="ex-open">Otvori u rješavaču</button>
+    </div>
+    <div class="exgraphs" id="ex-graphs"></div>
+    <div id="ex-ans"></div>
+    <div id="ex-sol" hidden></div>
+  </section>
+
+  <section id="v-pravila" role="tabpanel" aria-labelledby="tab-pravila" class="rules" hidden>
+    <h2>Četiri osnovne arcus funkcije</h2>
+    <p>Svaka arcus funkcija je inverz trigonometrijske funkcije, ali ne cijele, nego samo jednog njenog dijela na kojem je ta funkcija injektivna. Taj dio određuje kodomen arcus funkcije.</p>
+    <div class="bgrid" id="base-graphs"></div>
+
+    <h2>Kada inverz postoji</h2>
+    <p>Funkcija f ima inverz samo ako je <b>injektivna</b>: različiti x daju različite f(x). Na grafiku: svaka horizontalna prava siječe grafik najviše jednom. Tada f⁻¹ "vraća" svaku vrijednost f(x) nazad u x.</p>
+    <p>Najlakši način da se to pokaže: f je <b>strogo monotona</b> (samo raste ili samo opada). Funkcija A·g(Bx + C) + D je uvijek strogo monotona kad su A ≠ 0 i B ≠ 0. Smjer određuju tri znaka: da li g raste, znak od B i znak od A. Svaki "minus" obrne smjer.</p>
+
+    <h2>Postupak za zadatak</h2>
+    <ol class="steps-ol">
+      <li><b>Domen f.</b> Za arcsin i arccos argument mora biti u [−1, 1]. Riješi dvostruku nejednakost −1 ≤ Bx + C ≤ 1. Za arctg i arcctg domen je ℝ.</li>
+      <li><b>Kodomen f.</b> Kreni od kodomena osnovne funkcije, pomnoži sa A i dodaj D.</li>
+      <li><b>Skica f.</b> Od osnovnog grafika: faktor uz x, pa pomjeranje po x, pa faktor ispred, pa pomjeranje po y. Ucrtaj krajeve i presjeke sa osama.</li>
+      <li><b>Inverz.</b> Napiši y = f(x), izrazi x (oduzmi D, podijeli sa A, primijeni sin/cos/tg/ctg, izrazi x), pa zamijeni x i y.</li>
+      <li><b>Domen i kodomen inverza.</b> D(f⁻¹) = K(f) i K(f⁻¹) = D(f).</li>
+      <li><b>Skica f⁻¹.</b> Odraz grafika f preko prave y = x. Ucrtaj samo luk iznad D(f⁻¹).</li>
+    </ol>
+
+    <h2>Transformacije grafika</h2>
+    <div class="tw"><table class="rt">
+      <thead><tr><th>zapis</th><th>šta se desi sa grafikom y = g(x)</th></tr></thead>
+      <tbody>
+        <tr><td class="m">g(<i>x</i> + c)</td><td>pomjeranje ulijevo za c (za c &lt; 0 udesno za |c|)</td></tr>
+        <tr><td class="m">g(b<i>x</i>)</td><td>za |b| &gt; 1 sabijanje prema y-osi |b| puta, za |b| &lt; 1 razvlačenje</td></tr>
+        <tr><td class="m">g(−<i>x</i>)</td><td>odraz preko y-ose</td></tr>
+        <tr><td class="m">g(b<i>x</i> + c)</td><td>= g(b(x + c/b)): prvo faktor b, pa pomak za −c/b</td></tr>
+        <tr><td class="m">a·g(<i>x</i>)</td><td>za |a| &gt; 1 razvlačenje po y-osi, za |a| &lt; 1 sabijanje</td></tr>
+        <tr><td class="m">−g(<i>x</i>)</td><td>odraz preko x-ose</td></tr>
+        <tr><td class="m">g(<i>x</i>) + d</td><td>pomjeranje naviše za d (za d &lt; 0 naniže)</td></tr>
+      </tbody>
+    </table></div>
+    <p>Promjene <b>unutar</b> zagrade djeluju na x i rade "obrnuto" od očekivanog (+c pomjera ulijevo, ·b sabija). Promjene <b>van</b> zagrade djeluju na y i rade "kako piše". Razlog: g(x + c) u tački x ima vrijednost koju je g imao u tački x + c, dakle c jedinica desnije. Zato se cijeli grafik pomjeri ulijevo.</p>
+
+    <h2>Zašto je grafik f⁻¹ odraz preko y = x</h2>
+    <p>Ako je f(a) = b, tačka (a, b) je na grafiku f. Tada je f⁻¹(b) = a, pa je tačka (b, a) na grafiku f⁻¹. Tačke (a, b) i (b, a) su simetrične u odnosu na pravu y = x, a to važi za svaku tačku grafika.</p>
+
+    <h2>Identiteti koje koristimo</h2>
+    <div class="tw"><table class="rt">
+      <thead><tr><th>uvijek važi</th><th>važi samo za</th><th>primjer kad ne važi</th></tr></thead>
+      <tbody>
+        <tr><td class="m">sin(arcsin u) = u, u ∈ [−1, 1]</td><td class="m">arcsin(sin t) = t, t ∈ [−π/2, π/2]</td><td class="m">arcsin(sin π) = 0</td></tr>
+        <tr><td class="m">cos(arccos u) = u, u ∈ [−1, 1]</td><td class="m">arccos(cos t) = t, t ∈ [0, π]</td><td class="m">arccos(cos 2π) = 0</td></tr>
+        <tr><td class="m">tg(arctg u) = u, u ∈ ℝ</td><td class="m">arctg(tg t) = t, t ∈ (−π/2, π/2)</td><td class="m">arctg(tg π) = 0</td></tr>
+        <tr><td class="m">ctg(arcctg u) = u, u ∈ ℝ</td><td class="m">arcctg(ctg t) = t, t ∈ (0, π)</td><td class="m">arcctg(ctg 3π/2) = π/2</td></tr>
+      </tbody>
+    </table></div>
+    <p>Zato u postupku na arcus primjenjujemo sin, cos, tg ili ctg (lijeva kolona), a ne obrnuto. Korisno je i: arcsin(−u) = −arcsin u, arctg(−u) = −arctg u, arccos(−u) = π − arccos u, arcctg(−u) = π − arcctg u, arcsin u + arccos u = π/2, arctg u + arcctg u = π/2. Kod inverza pomažu i sin(−t) = −sin t, tg(−t) = −tg t, ctg(−t) = −ctg t (neparne funkcije) i cos(−t) = cos t (parna funkcija).</p>
+
+    <h2>Nejednakosti</h2>
+    <p>Kad se istim brojem sabiraju ili oduzimaju sve strane nejednakosti, znakovi ostaju isti. Isto važi kad se sve strane množe ili dijele <b>pozitivnim</b> brojem. Kod množenja ili dijeljenja <b>negativnim</b> brojem svi znakovi se okreću, jer minus obrne poredak: 2 &lt; 3, ali −2 &gt; −3. Otvoren kraj intervala ostaje otvoren i kad zamijeni stranu.</p>
+
+    <h2>Česte greške</h2>
+    <ul class="err-list">
+      <li>Pomak čitan kao −C umjesto −C/B: kod arcsin(3x − 1) pomak je 1/3, a ne 1.</li>
+      <li>Kad je A ili B negativan, znakovi u nejednakosti se ne okrenu.</li>
+      <li>Za domen inverza napisano ℝ, "jer je sin definisan svuda". Domen inverza je K(f), jer je f⁻¹ samo jedan luk sinusoide.</li>
+      <li>Pretpostavljeno da arcsin(sin t) = t važi za svako t.</li>
+      <li>Kodomen od arcctg napisan kao (−π/2, π/2). Kod nas je obično (0, π).</li>
+    </ul>
+
+    <h2>Šta rješavač radi, a šta ne</h2>
+    <p>Rješava funkcije oblika A·g(Bx + C) + D, gdje je g jedna od funkcija arcsin, arccos, arctg i arcctg. A, B i C su racionalni brojevi (cijeli, razlomci ili decimale), a D može sadržati i π. Za sve drugo (sin, ln, x van arcusa, x², zbir dvije arcus funkcije, π uz x) prikazuje obavještenje sa razlogom i ne izmišlja rješenje. Svaki inverz se automatski provjerava na stotinama tačaka prije prikaza. Ako provjera padne, rezultat se ne prikazuje.</p>
+  </section>
+  </main>
+  <p class="foot">Postupak prati uobičajen zapis sa vježbi: tg, ctg, arctg, arcctg i kodomen arcctg (0, π). Ako se vaša skripta razlikuje, drži se skripte. Rješavač služi da provjeriš i razumiješ svoj postupak, a ne da ga zamijeni.</p>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* Matematički motor: f(x) = A·g(Bx + C) + D, g ∈ {arcsin, arccos, arctg, arcctg}.
+   Sve se računa tačno (razlomci i višekratnici π); brojevi s pomičnim zarezom
+   služe samo za crtanje i za provjeru. */
+var Arcus = (function () {
+  'use strict';
+  var PI = Math.PI;
+  var MINUS = '−';
+
+  function MathErr(title, msg, kind) {
+    this.title = title; this.message = msg; this.kind = kind || 'error';
+  }
+
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a; }
+
+  /* ---------- Razlomci ---------- */
+  function Q(n, d) {
+    if (d === undefined) d = 1;
+    if (!Number.isInteger(n) || !Number.isInteger(d)) throw new MathErr('Broj nije podržan', 'Koristi cijele brojeve, razlomke ili decimale sa najviše 6 decimala.');
+    if (d === 0) throw new MathErr('Dijeljenje nulom', 'U izrazu se dijeli nulom, pa izraz nema vrijednost.');
+    if (d < 0) { n = -n; d = -d; }
+    var g = gcd(n, d) || 1;
+    this.n = n / g; this.d = d / g;
+    if (Math.abs(this.n) > 1e9 || this.d > 1e9) throw new MathErr('Prevelik broj', 'Brojevi su preveliki za tačan račun. Unesi jednostavnije koeficijente.');
+  }
+  Q.prototype.add = function (o) { return new Q(this.n * o.d + o.n * this.d, this.d * o.d); };
+  Q.prototype.sub = function (o) { return this.add(o.neg()); };
+  Q.prototype.mul = function (o) { return new Q(this.n * o.n, this.d * o.d); };
+  Q.prototype.div = function (o) {
+    if (o.n === 0) throw new MathErr('Dijeljenje nulom', 'U izrazu se dijeli nulom, pa izraz nema vrijednost.');
+    return new Q(this.n * o.d, this.d * o.n);
+  };
+  Q.prototype.neg = function () { return new Q(-this.n, this.d); };
+  Q.prototype.abs = function () { return new Q(Math.abs(this.n), this.d); };
+  Q.prototype.isZero = function () { return this.n === 0; };
+  Q.prototype.isOne = function () { return this.n === 1 && this.d === 1; };
+  Q.prototype.isMinusOne = function () { return this.n === -1 && this.d === 1; };
+  Q.prototype.sign = function () { return Math.sign(this.n); };
+  Q.prototype.eq = function (o) { return this.n === o.n && this.d === o.d; };
+  Q.prototype.val = function () { return this.n / this.d; };
+  var Z = new Q(0), ONE = new Q(1);
+  function q(n, d) { return new Q(n, d); }
+
+  /* ---------- a + bπ ---------- */
+  function P(a, b) { this.a = a || Z; this.b = b || Z; }
+  P.prototype.add = function (o) { return new P(this.a.add(o.a), this.b.add(o.b)); };
+  P.prototype.sub = function (o) { return new P(this.a.sub(o.a), this.b.sub(o.b)); };
+  P.prototype.scale = function (k) { return new P(this.a.mul(k), this.b.mul(k)); };
+  P.prototype.neg = function () { return new P(this.a.neg(), this.b.neg()); };
+  P.prototype.isZero = function () { return this.a.isZero() && this.b.isZero(); };
+  P.prototype.isRat = function () { return this.b.isZero(); };
+  P.prototype.eq = function (o) { return this.a.eq(o.a) && this.b.eq(o.b); };
+  P.prototype.val = function () { return this.a.val() + this.b.val() * PI; };
+  P.prototype.nTerms = function () { return (this.a.isZero() ? 0 : 1) + (this.b.isZero() ? 0 : 1); };
+  function pr(n, d) { return new P(q(n, d), Z); }
+  function pp(n, d) { return new P(Z, q(n, d)); }
+
+  /* ---------- r + s√k (za tačne presjeke sa osama) ---------- */
+  function S(r, s, k) {
+    this.r = r || Z; this.s = s || Z; this.k = k || 1;
+    if (this.k === 1 && !this.s.isZero()) { this.r = this.r.add(this.s); this.s = Z; }
+    if (this.s.isZero()) this.k = 1;
+  }
+  S.prototype.addQ = function (c) { return new S(this.r.add(c), this.s, this.k); };
+  S.prototype.mulQ = function (c) { return new S(this.r.mul(c), this.s.mul(c), this.k); };
+  S.prototype.val = function () { return this.r.val() + this.s.val() * Math.sqrt(this.k); };
+
+  /* sin(k·π/12) za uglove koji su višekratnici π/6 ili π/4: [koef, korijen] */
+  var SIN12 = { 0: [q(0), 1], 2: [q(1, 2), 1], 3: [q(1, 2), 2], 4: [q(1, 2), 3], 6: [q(1), 1], 8: [q(1, 2), 3], 9: [q(1, 2), 2], 10: [q(1, 2), 1] };
+  function sin12(k) {
+    k = ((k % 24) + 24) % 24;
+    var neg = k >= 12; if (neg) k -= 12;
+    var e = SIN12[k]; if (!e) return null;
+    return [neg ? e[0].neg() : e[0], e[1]];
+  }
+  function sqrtSimplify(c, k) { // c·√k, k ∈ {1,2,3,4,6,9}
+    if (k === 4) return [c.mul(q(2)), 1];
+    if (k === 9) return [c.mul(q(3)), 1];
+    return [c, k];
+  }
+  /* Tačna vrijednost h(t), t = bπ; vraća S ili null */
+  function trigExact(h, t) {
+    if (!t.a.isZero()) return null;
+    var b = t.b; if ((12 * b.n) % b.d !== 0) return null;
+    var k = (12 * b.n) / b.d;
+    var s = sin12(k), c = sin12(k + 6);
+    if (!s || !c) return null;
+    var num, den;
+    if (h === 'sin') { num = s; den = null; }
+    else if (h === 'cos') { num = c; den = null; }
+    else if (h === 'tg') { num = s; den = c; }
+    else { num = c; den = s; }
+    if (!den) return new S(Z, num[0], num[1]);
+    if (den[0].isZero()) return null;
+    if (num[0].isZero()) return new S(Z, Z, 1);
+    // (a√m)/(b√n) = a/(b·n)·√(m·n)
+    var r = sqrtSimplify(num[0].div(den[0].mul(q(den[1]))), num[1] * den[1]);
+    return new S(Z, r[0], r[1]);
+  }
+
+  /* ---------- Osnovne funkcije ---------- */
+  var BASE = {
+    arcsin: { name: 'arcsin', h: 'sin', bounded: true, inc: true,
+      dom: [pr(-1), pr(1), true, true], rng: [pp(-1, 2), pp(1, 2), true, true],
+      at: { '-1': pp(-1, 2), '0': pr(0), '1': pp(1, 2), '-1/2': pp(-1, 6), '1/2': pp(1, 6) },
+      num: Math.asin, hnum: Math.sin,
+      restr: '[' + MINUS + 'π/2, π/2]' },
+    arccos: { name: 'arccos', h: 'cos', bounded: true, inc: false,
+      dom: [pr(-1), pr(1), true, true], rng: [pr(0), pp(1), true, true],
+      at: { '-1': pp(1), '0': pp(1, 2), '1': pr(0), '-1/2': pp(2, 3), '1/2': pp(1, 3) },
+      num: Math.acos, hnum: Math.cos,
+      restr: '[0, π]' },
+    arctg: { name: 'arctg', h: 'tg', bounded: false, inc: true,
+      dom: [null, null, false, false], rng: [pp(-1, 2), pp(1, 2), false, false],
+      at: { '-1': pp(-1, 4), '0': pr(0), '1': pp(1, 4) },
+      num: Math.atan, hnum: Math.tan,
+      restr: '(' + MINUS + 'π/2, π/2)' },
+    arcctg: { name: 'arcctg', h: 'ctg', bounded: false, inc: false,
+      dom: [null, null, false, false], rng: [pr(0), pp(1), false, false],
+      at: { '-1': pp(3, 4), '0': pp(1, 2), '1': pp(1, 4) },
+      num: function (u) { return PI / 2 - Math.atan(u); }, hnum: function (t) { return Math.cos(t) / Math.sin(t); },
+      restr: '(0, π)' }
+  };
+
+  /* krajevi domena: zaokruživanje može dati 1.0000000000000002, pa ga vraćamo na ±1 */
+  Object.keys(BASE).forEach(function (k) {
+    var b = BASE[k], raw = b.num;
+    if (b.bounded) b.num = function (u) { if (u > 1 && u - 1 < 1e-9) u = 1; else if (u < -1 && -1 - u < 1e-9) u = -1; return raw(u); };
+  });
+
+  /* ---------- Formatiranje: običan tekst ---------- */
+  function qMag(c, unit) { // |c|·unit, bez znaka
+    var n = Math.abs(c.n), d = c.d;
+    if (unit) {
+      var top = (n === 1 ? '' : n) + unit;
+      return d === 1 ? top : top + '/' + d;
+    }
+    return d === 1 ? String(n) : n + '/' + d;
+  }
+  function pTerms(p) {
+    var t = [];
+    if (!p.a.isZero()) t.push({ c: p.a, u: '' });
+    if (!p.b.isZero()) t.push({ c: p.b, u: 'π' });
+    if (t.length === 2 && p.a.sign() < 0 && p.b.sign() > 0) t.reverse();
+    return t;
+  }
+  function joinPlain(terms) {
+    if (!terms.length) return '0';
+    var s = '';
+    terms.forEach(function (t, i) {
+      var neg = t.c.sign() < 0;
+      if (i === 0) s += (neg ? MINUS : '') + t.m;
+      else s += (neg ? ' ' + MINUS + ' ' : ' + ') + t.m;
+    });
+    return s;
+  }
+  function fq(c) { return (c.sign() < 0 ? MINUS : '') + qMag(c, ''); }
+  function fp(p) { return joinPlain(pTerms(p).map(function (t) { t.m = qMag(t.c, t.u); return t; })); }
+  function fs(x) {
+    var t = [];
+    if (!x.r.isZero()) t.push({ c: x.r, m: qMag(x.r, '') });
+    if (!x.s.isZero()) {
+      var n = Math.abs(x.s.n), d = x.s.d;
+      t.push({ c: x.s, m: (n === 1 ? '' : n) + '√' + x.k + (d === 1 ? '' : '/' + d) });
+    }
+    return joinPlain(t);
+  }
+
+  /* ---------- Formatiranje: HTML ---------- */
+  function fr(a, b) { return '<span class="fr"><span>' + a + '</span><span>' + b + '</span></span>'; }
+  function hqMag(c, unit) {
+    var n = Math.abs(c.n), d = c.d;
+    var top = unit ? (n === 1 ? '' : n) + unit : String(n);
+    return d === 1 ? top : fr(top, d);
+  }
+  function joinHtml(terms) {
+    if (!terms.length) return '0';
+    var s = '';
+    terms.forEach(function (t, i) {
+      var neg = t.c.sign() < 0;
+      if (i === 0) s += (neg ? MINUS : '') + t.m;
+      else s += (neg ? ' ' + MINUS + ' ' : ' + ') + t.m;
+    });
+    return s;
+  }
+  function hq(c) { return (c.sign() < 0 ? MINUS : '') + hqMag(c, ''); }
+  function hp(p) { return joinHtml(pTerms(p).map(function (t) { t.m = hqMag(t.c, t.u); return t; })); }
+  function hs(x) {
+    var t = [];
+    if (!x.r.isZero()) t.push({ c: x.r, m: hqMag(x.r, '') });
+    if (!x.s.isZero()) {
+      var n = Math.abs(x.s.n), d = x.s.d, top = (n === 1 ? '' : n) + '√' + x.k;
+      t.push({ c: x.s, m: d === 1 ? top : fr(top, d) });
+    }
+    return joinHtml(t);
+  }
+  /* "+ π/4", "− 1 + π/2": izraz koji se dodaje nečemu ispred */
+  function hpTail(p) {
+    return pTerms(p).map(function (t) {
+      return (t.c.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(t.c, t.u);
+    }).join('');
+  }
+  function fpTail(p) {
+    return pTerms(p).map(function (t) {
+      return (t.c.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(t.c, t.u);
+    }).join('');
+  }
+  /* broj kao faktor ispred nečega: 2·, −, ½ */
+  function hcoef(c) {
+    if (c.isOne()) return '';
+    if (c.isMinusOne()) return MINUS;
+    return hq(c);
+  }
+  function fcoef(c) {
+    if (c.isOne()) return '';
+    if (c.isMinusOne()) return MINUS;
+    return c.d === 1 ? fq(c) : '(' + fq(c) + ')·';
+  }
+  function wrapP(p, html) { // u zagradi ako je negativno ili ima dva člana
+    var s = html ? hp(p) : fp(p);
+    var t = pTerms(p);
+    if (t.length > 1 || (t.length === 1 && t[0].c.sign() < 0)) return '(' + s + ')';
+    return s;
+  }
+  var X = '<i>x</i>', Y = '<i>y</i>';
+  function fnName(n) { return '<span class="fn">' + n + '</span>'; }
+
+  /* Bx + C */
+  function linHtml(B, C, v) {
+    v = v || X;
+    var s = hcoef(B) + v;
+    if (!C.isZero()) s += (C.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, '');
+    return s;
+  }
+  function linPlain(B, C) {
+    var s = fcoef(B) + 'x';
+    if (!C.isZero()) s += (C.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(C, '');
+    return s;
+  }
+  /* A·g(Bx + C) + D */
+  function fHtml(g, A, B, C, D, v) {
+    return hcoef(A) + fnName(g) + '(' + linHtml(B, C, v) + ')' + hpTail(D);
+  }
+  function fPlain(g, A, B, C, D) {
+    return fcoef(A) + g + '(' + linPlain(B, C) + ')' + fpTail(D);
+  }
+  /* (v − D)/A, pojednostavljeno tako da je imenilac pozitivan */
+  function innerHtml(A, D, v) {
+    var num;
+    if (A.sign() > 0) num = v + hpTail(D.neg());
+    else num = hp(D) + ' ' + MINUS + ' ' + v;
+    var den = A.abs();
+    if (den.isOne()) return num;
+    if (den.d === 1) return fr(num, den.n);
+    if (den.n === 1) return den.d + '(' + num + ')'; // (num)/(1/d) = d(num)
+    return fr(den.d + '(' + num + ')', den.n); // (num)/(n/d) = d(num)/n
+  }
+  /* jednostavnija, sigurna verzija za D = 0: (1/A)·v */
+  function innerHtmlSafe(A, D, v) {
+    if (!D.isZero()) return innerHtml(A, D, v);
+    var k = ONE.div(A);
+    if (k.isOne()) return v;
+    if (k.isMinusOne()) return MINUS + v;
+    var kk = k.abs();
+    var body = kk.d === 1 ? kk.n + v : (kk.n === 1 ? fr(v, kk.d) : fr(kk.n + v, kk.d));
+    return (k.sign() < 0 ? MINUS : '') + body;
+  }
+  function innerPlainSafe(A, D, v) {
+    if (D.isZero()) {
+      var k = ONE.div(A);
+      if (k.isOne()) return v;
+      if (k.isMinusOne()) return MINUS + v;
+      var kk = k.abs();
+      var body = kk.d === 1 ? kk.n + v : (kk.n === 1 ? v + '/' + kk.d : kk.n + v + '/' + kk.d);
+      return (k.sign() < 0 ? MINUS : '') + body;
+    }
+    var num = A.sign() > 0 ? v + fpTail(D.neg()) : fp(D) + ' ' + MINUS + ' ' + v;
+    var den = A.abs();
+    if (den.isOne()) return num;
+    if (den.d === 1) return '(' + num + ')/' + den.n;
+    if (den.n === 1) return den.d + '(' + num + ')';
+    return den.d + '(' + num + ')/' + den.n;
+  }
+  /* (1/B)·h(inner) − C/B */
+  function finvHtml(h, A, B, C, D, v, kk) {
+    var k = kk || ONE.div(B), c0 = C.neg().div(B);
+    var body = fnName(h) + '(' + innerHtmlSafe(A, D, v) + ')';
+    var s = hcoef(k) + body;
+    if (!c0.isZero()) s += (c0.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(c0, '');
+    return s;
+  }
+  function finvPlain(h, A, B, C, D, v, kk) {
+    var k = kk || ONE.div(B), c0 = C.neg().div(B);
+    var s = fcoef(k) + h + '(' + innerPlainSafe(A, D, v) + ')';
+    if (!c0.isZero()) s += (c0.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(c0, '');
+    return s;
+  }
+
+  /* ---------- Intervali ---------- */
+  function ivHtml(lo, hi, lc, hc) {
+    if (!lo && !hi) return 'ℝ';
+    return (lc ? '[' : '(') + (lo ? hp(lo) : MINUS + '∞') + ', ' + (hi ? hp(hi) : '+∞') + (hc ? ']' : ')');
+  }
+  function ivPlain(lo, hi, lc, hc) {
+    if (!lo && !hi) return 'ℝ';
+    return (lc ? '[' : '(') + (lo ? fp(lo) : MINUS + '∞') + ', ' + (hi ? fp(hi) : '+∞') + (hc ? ']' : ')');
+  }
+  function le(closed) { return closed ? ' ≤ ' : ' &lt; '; }
+  function ge(closed) { return closed ? ' ≥ ' : ' &gt; '; }
+
+  /* ---------- Objašnjenja računanja ---------- */
+  function explainAddQ(a, b, unit) {
+    // a + b sa zajedničkim imeniocem; vraća tekst ili '' ako nema šta objašnjavati
+    var sum = a.add(b);
+    var fmt = function (c) { return c.isZero() ? '0' : (c.sign() < 0 ? MINUS : '') + qMag(c, unit); };
+    var bstr = b.sign() < 0 ? ' ' + MINUS + ' ' + qMag(b, unit) : ' + ' + qMag(b, unit);
+    if (a.isZero()) return '';
+    if (a.d === 1 && b.d === 1) return fmt(a) + bstr + ' = ' + fmt(sum);
+    var L = a.d * b.d / gcd(a.d, b.d);
+    var an = a.n * (L / a.d), bn = b.n * (L / b.d);
+    var mid = '';
+    if (a.d !== b.d) {
+      var u = unit || '';
+      var fa = (an < 0 ? MINUS : '') + (Math.abs(an) === 1 && u ? '' : Math.abs(an)) + u + '/' + L;
+      var fb = (bn < 0 ? ' ' + MINUS + ' ' : ' + ') + (Math.abs(bn) === 1 && u ? '' : Math.abs(bn)) + u + '/' + L;
+      mid = ' = ' + fa + fb;
+    }
+    return fmt(a) + bstr + mid + ' = ' + fmt(sum);
+  }
+  function explainAddP(p1, p2) {
+    var parts = [];
+    var r = explainAddQ(p1.a, p2.a, ''); if (r && !p2.a.isZero()) parts.push(r);
+    var s = explainAddQ(p1.b, p2.b, 'π'); if (s && !p2.b.isZero()) parts.push(s);
+    var res = p1.add(p2);
+    var mixed = !res.a.isZero() && !res.b.isZero();
+    return { calc: parts, mixed: mixed ? fp(res) : null };
+  }
+  function explainAddAll(list) {
+    var calc = [], mixed = [];
+    list.forEach(function (e) { calc = calc.concat(e.calc); if (e.mixed) mixed.push(e.mixed); });
+    var txt = calc.length ? 'Računamo: ' + calc.join('; ') + '.' : '';
+    if (mixed.length) txt += (txt ? ' ' : '') + (mixed.length > 1 ? 'Brojevi ' + mixed.join(' i ') + ' se ne mogu' : 'Broj ' + mixed[0] + ' se ne može') + ' dalje sabrati: racionalan broj i višekratnik π su različite vrste brojeva, pa ostaju kao zbir (kao 2 + √3).';
+    return txt;
+  }
+  function explainMul(k, p) {
+    // k·p
+    var res = p.scale(k);
+    var segs = [];
+    pTerms(p).forEach(function (t) {
+      var rawN = k.n * t.c.n, rawD = k.d * t.c.d;
+      var r = new Q(rawN, rawD);
+      var raw = (rawN < 0 ? MINUS : '') + (Math.abs(rawN) === 1 && t.u ? '' : Math.abs(rawN)) + t.u + (rawD === 1 ? '' : '/' + rawD);
+      var fin = (r.sign() < 0 ? MINUS : '') + qMag(r, t.u);
+      var seg = fq(k) + ' · ' + ((t.c.sign() < 0) ? '(' + MINUS + qMag(t.c, t.u) + ')' : qMag(t.c, t.u)) + ' = ' + raw;
+      if (raw !== fin) seg += ' = ' + fin;
+      segs.push(seg);
+    });
+    if (!segs.length) return '';
+    return 'Računamo: ' + segs.join('; ') + (p.nTerms() > 1 ? ', pa je rezultat ' + fp(res) : '') + '.';
+  }
+
+  /* ---------- Parser ---------- */
+  var FUNCS = [
+    ['arccotg', 'arcctg'], ['arcctan', 'arcctg'], ['arcctg', 'arcctg'], ['arccot', 'arcctg'], ['acot', 'arcctg'],
+    ['arcsin', 'arcsin'], ['asin', 'arcsin'], ['arccos', 'arccos'], ['acos', 'arccos'],
+    ['arctan', 'arctg'], ['arctg', 'arctg'], ['atan', 'arctg'],
+    ['sqrt', '#sqrt'], ['cotg', '#ctg'], ['ctg', '#ctg'], ['cot', '#ctg'], ['tan', '#tg'], ['tg', '#tg'],
+    ['sin', '#sin'], ['cos', '#cos'], ['exp', '#exp'], ['ln', '#ln'], ['log', '#log'],
+    ['pi', 'π']
+  ];
+  var ALIAS_NOTE = { arctan: 'arctg', atan: 'arctg', arccot: 'arcctg', arccotg: 'arcctg', arcctan: 'arcctg', acot: 'arcctg', asin: 'arcsin', acos: 'arccos' };
+
+  function tokenize(src) {
+    var s = src.replace(/[−–—]/g, '-').replace(/[·×∙⋅]/g, '*').replace(/÷/g, '/').replace(/,/g, '.').replace(/\s+/g, ' ').trim();
+    s = s.replace(/^\s*(f\s*\(\s*x\s*\)|y)\s*=\s*/i, '');
+    var toks = [], i = 0, notes = [];
+    if (!s) throw new MathErr('Prazan unos', 'Upiši funkciju, npr. 2arcsin(3x − 1) + π/4.');
+    while (i < s.length) {
+      var ch = s[i];
+      if (ch === ' ') { i++; continue; }
+      if (/[0-9.]/.test(ch)) {
+        var m = /^[0-9]*\.?[0-9]*/.exec(s.slice(i))[0];
+        if (m === '.' || (m.match(/\./g) || []).length > 1) throw new MathErr('Neispravan broj', 'Broj "' + m + '" nije ispravno napisan.');
+        var parts = m.split('.');
+        var dec = parts[1] || '';
+        if (dec.length > 6) throw new MathErr('Previše decimala', 'Broj ' + m + ' ima više od 6 decimala. Upiši ga kao razlomak.');
+        var den = Math.pow(10, dec.length);
+        toks.push({ t: 'num', v: q(parseInt((parts[0] || '0') + dec, 10), den), s: m });
+        i += m.length; continue;
+      }
+      if (ch === 'π') { toks.push({ t: 'pi' }); i++; continue; }
+      if (/[a-zA-Z]/.test(ch)) {
+        var rest = s.slice(i).toLowerCase(), found = null;
+        for (var k = 0; k < FUNCS.length; k++) if (rest.indexOf(FUNCS[k][0]) === 0) { found = FUNCS[k]; break; }
+        if (found) {
+          if (found[1] === 'π') toks.push({ t: 'pi' });
+          else {
+            toks.push({ t: 'fn', v: found[1], s: found[0] });
+            if (ALIAS_NOTE[found[0]]) notes.push(found[0] + ' je shvaćeno kao ' + ALIAS_NOTE[found[0]] + ' (ista funkcija, druga oznaka).');
+          }
+          i += found[0].length; continue;
+        }
+        if (rest[0] === 'x') { toks.push({ t: 'x' }); i++; continue; }
+        if (rest[0] === 'e') throw new MathErr('Broj e nije podržan', 'Rješavač za sada radi samo sa arcus funkcijama oblika A·g(Bx + C) + D. Broj e i eksponencijalna funkcija nisu podržani.');
+        var word = /^[a-z]+/.exec(rest)[0];
+        throw new MathErr('Nepoznat simbol', '"' + word + '" nije prepoznat. Dozvoljeno: x, π (ili pi), arcsin, arccos, arctg, arcctg, brojevi, + − · / i zagrade.');
+      }
+      if ('+-*/()^'.indexOf(ch) >= 0) { toks.push({ t: ch }); i++; continue; }
+      if (ch === '[' || ch === '{') { toks.push({ t: '(' }); i++; continue; }
+      if (ch === ']' || ch === '}') { toks.push({ t: ')' }); i++; continue; }
+      throw new MathErr('Nepoznat znak', 'Znak "' + ch + '" nije podržan.');
+    }
+    return { toks: toks, notes: notes };
+  }
+
+  /* Linearni oblik: c + x·X + Σ k·g(Bx + C) */
+  function L(c, x, terms) { this.c = c || new P(); this.x = x || Z; this.terms = terms || []; }
+  L.prototype.isConst = function () { return this.x.isZero() && this.terms.length === 0; };
+  function lAdd(u, v) { return new L(u.c.add(v.c), u.x.add(v.x), u.terms.concat(v.terms)); }
+  function lNeg(u) { return new L(u.c.neg(), u.x.neg(), u.terms.map(function (t) { return { g: t.g, B: t.B, C: t.C, k: t.k.neg() }; })); }
+  function lScale(u, c) { // c je P
+    if (!c.isRat()) {
+      if (!u.isConst()) throw new MathErr('π kao koeficijent', 'π se množi sa x ili sa arcus funkcijom. Podržani su samo racionalni koeficijenti A i B (npr. 2, −1/2), a π smije biti samo u slobodnom članu D.');
+      if (!u.c.isRat()) throw new MathErr('π² nije podržan', 'U izrazu se π množi sa π. Takav slobodan član nije podržan.');
+      return new L(c.scale(u.c.a), Z, []);
+    }
+    var k = c.a;
+    return new L(u.c.scale(k), u.x.mul(k), u.terms.map(function (t) { return { g: t.g, B: t.B, C: t.C, k: t.k.mul(k) }; }));
+  }
+  function lMul(u, v) {
+    if (u.isConst()) return lScale(v, u.c);
+    if (v.isConst()) return lScale(u, v.c);
+    throw new MathErr('Proizvod nije podržan', 'Izraz sadrži proizvod dva dijela koji zavise od x (npr. x·arctg x). Takve funkcije obično nemaju inverz koji se može napisati formulom.');
+  }
+  function lDiv(u, v) {
+    if (!v.isConst()) throw new MathErr('Dijeljenje izrazom sa x', 'Dijeli se izrazom koji sadrži x. Podržan je samo oblik A·g(Bx + C) + D.');
+    if (!v.c.isRat()) throw new MathErr('Dijeljenje sa π', 'Dijeljenje sa π nije podržano. Koeficijenti A i B moraju biti racionalni brojevi.');
+    if (v.c.a.isZero()) throw new MathErr('Dijeljenje nulom', 'U izrazu se dijeli nulom, pa izraz nema vrijednost.');
+    return lScale(u, new P(ONE.div(v.c.a), Z));
+  }
+
+  function parse(src) {
+    var tk = tokenize(src), toks = tk.toks, pos = 0, notes = tk.notes.slice();
+    function peek() { return toks[pos]; }
+    function eat(t) { if (peek() && peek().t === t) { pos++; return true; } return false; }
+    function startsPrimary(t) { return t && (t.t === 'num' || t.t === 'x' || t.t === 'pi' || t.t === 'fn' || t.t === '('); }
+    function expr() {
+      var u = term();
+      while (peek() && (peek().t === '+' || peek().t === '-')) {
+        var op = toks[pos++].t, v = term();
+        u = op === '+' ? lAdd(u, v) : lAdd(u, lNeg(v));
+      }
+      return u;
+    }
+    function term() {
+      var u = unary();
+      for (;;) {
+        var t = peek();
+        if (t && t.t === '*') { pos++; u = lMul(u, unary()); }
+        else if (t && t.t === '/') { pos++; u = lDiv(u, unary()); }
+        else if (startsPrimary(t)) u = lMul(u, power());
+        else break;
+      }
+      return u;
+    }
+    function unary() {
+      if (eat('-')) return lNeg(unary());
+      if (eat('+')) return unary();
+      return power();
+    }
+    function power() {
+      var b = primary();
+      if (peek() && peek().t === '^') throw new MathErr('Stepen nije podržan', 'Znak ^ (stepen) nije podržan. Argument arcus funkcije mora biti linearan: Bx + C. Npr. arcsin(x²) nije injektivna, pa nema inverz na cijelom domenu.');
+      return b;
+    }
+    function funcArg(name) {
+      if (eat('(')) {
+        var a = expr();
+        if (!eat(')')) throw new MathErr('Fali zagrada', 'Nije zatvorena zagrada iza ' + name + '.');
+        return a;
+      }
+      if (!startsPrimary(peek())) throw new MathErr('Fali argument', 'Iza ' + name + ' treba argument u zagradi, npr. ' + name + '(2x + 1).');
+      var start = pos, a = power();
+      while (startsPrimary(peek()) || (peek() && (peek().t === '*' || peek().t === '/'))) {
+        var t = toks[pos];
+        if (t.t === '*') { pos++; a = lMul(a, power()); }
+        else if (t.t === '/') { pos++; a = lDiv(a, power()); }
+        else a = lMul(a, power());
+      }
+      notes.push('Argument bez zagrade shvaćen je kao ' + name + '(…) do prvog znaka + ili −. Sigurnije je pisati zagrade.');
+      return a;
+    }
+    function primary() {
+      var t = toks[pos];
+      if (!t) throw new MathErr('Nedovršen izraz', 'Izraz se završava prerano. Provjeri da li nešto fali na kraju.');
+      pos++;
+      if (t.t === 'num') return new L(new P(t.v, Z));
+      if (t.t === 'pi') return new L(pp(1));
+      if (t.t === 'x') return new L(null, ONE);
+      if (t.t === '(') {
+        var u = expr();
+        if (!eat(')')) throw new MathErr('Fali zagrada', 'Neka zagrada nije zatvorena.');
+        return u;
+      }
+      if (t.t === 'fn') {
+        if (t.v[0] === '#') {
+          var nm = { '#sin': 'sin', '#cos': 'cos', '#tg': 'tg', '#ctg': 'ctg', '#ln': 'ln', '#log': 'log', '#exp': 'eksponencijalna funkcija', '#sqrt': 'korijen' }[t.v];
+          throw new MathErr('Funkcija još nije podržana', nm + ' nije podržana. Rješavač za sada radi samo sa arcus funkcijama oblika A·g(Bx + C) + D, gdje je g arcsin, arccos, arctg ili arcctg.');
+        }
+        var a = funcArg(t.v);
+        if (a.terms.length) throw new MathErr('Arcus u arcusu', 'U argumentu arcus funkcije nalazi se druga arcus funkcija. Podržan je samo linearan argument Bx + C.');
+        if (!a.c.isRat()) throw new MathErr('π u argumentu', 'Argument arcus funkcije sadrži π. Podržan je samo argument Bx + C sa racionalnim B i C.');
+        if (a.x.isZero()) throw new MathErr('Argument bez x', 'Argument od ' + t.v + ' ne sadrži x, pa je ' + t.v + '(' + fp(a.c) + ') samo konstanta. Podržan je argument Bx + C sa B ≠ 0.');
+        return new L(null, null, [{ g: t.v, B: a.x, C: a.c.a, k: ONE }]);
+      }
+      if (t.t === ')') throw new MathErr('Višak zagrade', 'Zatvorena zagrada bez otvorene.');
+      throw new MathErr('Neočekivan znak', 'Znak "' + t.t + '" je na pogrešnom mjestu.');
+    }
+    var res = expr();
+    if (pos < toks.length) throw new MathErr('Višak u izrazu', 'Dio izraza poslije pozicije ' + pos + ' nije razumljiv. Provjeri zagrade i znakove.');
+    // spoji iste arcus članove
+    var merged = [];
+    res.terms.forEach(function (t) {
+      var m = merged.filter(function (o) { return o.g === t.g && o.B.eq(t.B) && o.C.eq(t.C); })[0];
+      if (m) m.k = m.k.add(t.k); else merged.push({ g: t.g, B: t.B, C: t.C, k: t.k });
+    });
+    merged = merged.filter(function (t) { return !t.k.isZero(); });
+    if (merged.length === 0) {
+      if (!res.x.isZero()) throw new MathErr('Nema arcus funkcije', 'Ovo je linearna funkcija. Rješavač je napravljen za arcus funkcije oblika A·g(Bx + C) + D.');
+      throw new MathErr('Konstantna funkcija', 'Funkcija je konstantna (nema x ili se arcus članovi poništavaju). Konstantna funkcija nije injektivna, pa nema inverz.');
+    }
+    if (merged.length > 1) throw new MathErr('Više arcus funkcija', 'Izraz sadrži zbir više različitih arcus funkcija. Inverz takve funkcije se u opštem slučaju ne može dobiti formulom, pa je rješavač ne podržava.');
+    if (!res.x.isZero()) throw new MathErr('x van arcus funkcije', 'x se pojavljuje i van arcus funkcije (npr. x + arctg x). Takva funkcija nema inverz koji se može napisati formulom.');
+    var tt = merged[0];
+    return { g: tt.g, A: tt.k, B: tt.B, C: tt.C, D: res.c, notes: notes };
+  }
+
+  /* ---------- Rješavanje ---------- */
+  function numP(p) { return { v: p.val(), plain: fp(p), html: hp(p), exact: true }; }
+  function numS(s) { return { v: s.val(), plain: fs(s), html: hs(s), exact: true }; }
+  function numApprox(v) {
+    var r = Math.round(v * 1000) / 1000;
+    var s = ('≈ ' + String(r).replace('-', MINUS)).replace('.', ',');
+    return { v: v, plain: s, html: s, exact: false };
+  }
+
+  function solve(prob) {
+    var g = prob.g, A = prob.A, B = prob.B, C = prob.C, D = prob.D;
+    var bs = BASE[g];
+    if (!bs) throw new MathErr('Nepoznata funkcija', 'Funkcija ' + g + ' nije podržana.');
+    if (A.isZero()) throw new MathErr('A = 0', 'Za A = 0 funkcija je konstantna, nije injektivna i nema inverz.');
+    if (B.isZero()) throw new MathErr('B = 0', 'Za B = 0 argument ne zavisi od x, funkcija je konstantna i nema inverz.');
+    var h = bs.h;
+    var fnum = function (x) { return A.val() * bs.num(B.val() * x + C.val()) + D.val(); };
+    var hnum = bs.hnum;
+    var finvnum = function (x) { return (hnum((x - D.val()) / A.val()) - C.val()) / B.val(); };
+    var uH = linHtml(B, C);
+    var gu = fnName(g) + '(' + uH + ')';
+    var Agu = hcoef(A) + gu;
+    var fH = fHtml(g, A, B, C, D);
+    var notes = [];
+    var assumptions = [];
+    assumptions.push('Uglovi su u radijanima.');
+    if (g === 'arcctg') assumptions.push('Kodomen arcctg je (0, π), kao u većini udžbenika kod nas. Neke knjige koriste drugi dogovor; ako vaša skripta drugačije definiše arcctg, rezultat za kodomen se mijenja.');
+    if (h === 'tg' || h === 'ctg') assumptions.push('Oznake: tg = tan, ctg = cot, arctg = arctan, arcctg = arccot.');
+
+    /* 1. Domen */
+    var dom, domLines = [];
+    var mid = function (b, c) { return linHtml(b, c); };
+    if (bs.bounded) {
+      domLines.push({ math: MINUS + '1 ≤ ' + uH + ' ≤ 1', rule: 'Uslov: argument od ' + g + ' mora biti u [' + MINUS + '1, 1].',
+        why: g + ' je inverz funkcije ' + h + ' suženog na ' + bs.restr + '. Funkcija ' + h + ' daje samo vrijednosti iz [' + MINUS + '1, 1], pa ' + g + ' može da "primi" samo te brojeve. Npr. ' + g + '(2) ne postoji, jer nijedan ugao nema ' + h + ' jednak 2.' });
+      var lo = q(-1), hi = q(1);
+      if (!C.isZero()) {
+        var mc = C.neg();
+        var lo2 = lo.add(mc), hi2 = hi.add(mc);
+        var tail = (mc.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(mc, '');
+        domLines.push({ math: MINUS + '1' + tail + ' ≤ ' + linHtml(B, Z) + ' ≤ 1' + tail,
+          rule: (C.sign() < 0 ? 'Dodajemo ' + qMag(C, '') + ' svim stranama' : 'Oduzimamo ' + qMag(C, '') + ' od svih strana') + ' da bi uz x ostalo samo ' + linPlain(B, Z) + '. Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
+        domLines.push({ math: hq(lo2) + ' ≤ ' + linHtml(B, Z) + ' ≤ ' + hq(hi2), rule: 'Računamo: ' + explainAddQ(lo, mc, '') + ' i ' + explainAddQ(hi, mc, '') + '.' });
+        lo = lo2; hi = hi2;
+      }
+      if (!B.isOne()) {
+        var l3 = lo.div(B), h3 = hi.div(B);
+        var raw = fr(hq(lo), hq(B)) + (B.sign() > 0 ? ' ≤ ' : ' ≥ ') + X + (B.sign() > 0 ? ' ≤ ' : ' ≥ ') + fr(hq(hi), hq(B));
+        if (B.sign() > 0) {
+          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' > 0, znakovi nejednakosti ostaju isti.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + '.' : '') });
+          domLines.push({ math: hq(l3) + ' ≤ ' + X + ' ≤ ' + hq(h3), rule: 'Skraćujemo razlomke.' });
+        } else {
+          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' < 0, znakovi nejednakosti se okreću: ≤ postaje ≥.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + '.' : ''),
+            why: 'Množenje ili dijeljenje negativnim brojem obrće poredak brojeva: 2 < 3, ali ' + MINUS + '2 > ' + MINUS + '3. Zato se pri dijeljenju sa negativnim B svaki znak ≤ mijenja u ≥.' });
+          domLines.push({ math: hq(l3) + ' ≥ ' + X + ' ≥ ' + hq(h3), rule: 'Skraćujemo razlomke.' });
+          domLines.push({ math: hq(h3) + ' ≤ ' + X + ' ≤ ' + hq(l3), rule: 'Pišemo isto, ali od manjeg broja ka većem.' });
+          var tmp = l3; l3 = h3; h3 = tmp;
+        }
+        lo = l3; hi = h3;
+      }
+      dom = { lo: new P(lo, Z), hi: new P(hi, Z), lc: true, hc: true };
+    } else {
+      domLines.push({ math: uH + ' ∈ ℝ', rule: g + ' je definisan za svaki realan broj.',
+        why: h + ' na intervalu ' + bs.restr + ' poprima sve realne vrijednosti (grafik ide od ' + MINUS + '∞ do +∞ između asimptota). Zato njen inverz ' + g + ' prima bilo koji realan broj, pa nema uslova na x.' });
+      dom = { lo: null, hi: null, lc: false, hc: false };
+    }
+    var domH = ivHtml(dom.lo, dom.hi, dom.lc, dom.hc);
+
+    /* 2. Kodomen */
+    var rl = bs.rng[0], rh = bs.rng[1], rlc = bs.rng[2], rhc = bs.rng[3];
+    var rngLines = [];
+    rngLines.push({ math: hp(rl) + le(rlc) + gu + le(rhc) + hp(rh), rule: 'Kodomen od ' + g + ' je ' + ivPlain(rl, rh, rlc, rhc) + '.',
+      why: (bs.bounded ? 'Kad x prolazi cijeli domen, u = ' + linPlain(B, C) + ' prolazi cijeli interval [' + MINUS + '1, 1] (linearna funkcija je neprekidna i monotona).' : 'Kad x prolazi ℝ, u = ' + linPlain(B, C) + ' prolazi sve realne brojeve.') +
+        ' Zato ' + g + '(u) poprima sve vrijednosti iz svog kodomena ' + ivPlain(rl, rh, rlc, rhc) + (bs.bounded ? '' : ', a krajeve nikad ne dostiže (asimptote)') + '.' });
+    if (!A.isOne()) {
+      var nl = rl.scale(A), nh = rh.scale(A);
+      if (A.sign() > 0) {
+        rngLines.push({ math: hp(rl.scale(A)) + le(rlc) + Agu + le(rhc) + hp(rh.scale(A)), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' > 0, znakovi ostaju. ' + [explainMul(A, rl), explainMul(A, rh)].filter(Boolean).join(' ').replace(/\. Računamo:/g, ';') });
+      } else {
+        rngLines.push({ math: hp(nl) + ge(rlc) + Agu + ge(rhc) + hp(nh), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' < 0, znakovi se okreću. ' + [explainMul(A, rl), explainMul(A, rh)].filter(Boolean).join(' ').replace(/\. Računamo:/g, ';'),
+          why: 'Negativan A obrće interval: najmanja vrijednost od ' + g + ' postaje najveća vrijednost od A·' + g + ' i obrnuto. Na grafiku je to odraz preko x-ose.' });
+        rngLines.push({ math: hp(nh) + le(rhc) + Agu + le(rlc) + hp(nl), rule: 'Pišemo od manjeg ka većem. Uz kraj ide i njegova zagrada: otvoren kraj ostaje otvoren.' });
+        var t1 = nl; nl = nh; nh = t1; var t2 = rlc; rlc = rhc; rhc = t2;
+      }
+      rl = nl; rh = nh;
+    }
+    if (!D.isZero()) {
+      var dtail = hpTail(D);
+      rngLines.push({ math: hp(rl) + dtail + le(rlc) + Agu + dtail + le(rhc) + hp(rh) + dtail, rule: (D.nTerms() === 1 && D.val() < 0 ? 'Oduzimamo ' + fp(D.neg()) + ' od svih strana.' : 'Dodajemo ' + fp(D) + ' svim stranama.') + ' Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
+      var al = rl.add(D), ah = rh.add(D);
+      rngLines.push({ math: hp(al) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(ah), rule: explainAddAll([explainAddP(rl, D), explainAddP(rh, D)]) || 'Sređujemo.' });
+      rl = al; rh = ah;
+    } else {
+      rngLines.push({ math: hp(rl) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(rh), rule: 'Srednji izraz je baš f(x).' });
+    }
+    var rng = { lo: rl, hi: rh, lc: rlc, hc: rhc };
+    var rngH = ivHtml(rl, rh, rlc, rhc);
+
+    /* Monotonost */
+    var signs = (bs.inc ? 1 : -1) * A.sign() * B.sign();
+    var inc = signs > 0;
+    var monoWhy = g + ' je ' + (bs.inc ? 'rastuća' : 'opadajuća') + '. Unutrašnja funkcija ' + linPlain(B, C) + ' je ' + (B.sign() > 0 ? 'rastuća (B > 0)' : 'opadajuća (B < 0)') + '. Množenje sa A ' + (A.sign() > 0 ? 'ne mijenja smjer (A > 0)' : 'obrće smjer (A < 0)') + '. Svaka "opadajuća" karika obrne smjer, pa je f ' + (inc ? 'rastuća' : 'opadajuća') + '. Strogo monotona funkcija je injektivna (nikad ne uzme istu vrijednost dva puta), pa f⁻¹ postoji.';
+
+    /* 3. Karakteristične tačke */
+    var pts = [];
+    function addPt(x, y, label, kind) {
+      for (var i = 0; i < pts.length; i++) if (Math.abs(pts[i].x.v - x.v) < 1e-12) return;
+      pts.push({ x: x, y: y, label: label, kind: kind });
+    }
+    ['-1', '0', '1'].forEach(function (us) {
+      var uq = q(parseInt(us, 10));
+      var x = uq.sub(C).div(B);
+      var y = bs.at[us].scale(A).add(D);
+      addPt(numP(new P(x, Z)), numP(y), 'u = ' + fq(uq), bs.bounded && us !== '0' ? 'end' : 'mid');
+    });
+    // presjek sa y-osom: x = 0
+    var x0in = bs.bounded ? (0 >= dom.lo.val() - 1e-15 && 0 <= dom.hi.val() + 1e-15) : true;
+    var yint = null;
+    if (x0in) {
+      var key = fq(C).replace(MINUS, '-');
+      var gC = bs.at[key];
+      yint = gC ? numP(gC.scale(A).add(D)) : numApprox(fnum(0));
+      addPt(numP(pr(0)), yint, 'presjek sa y-osom', 'yint');
+    }
+    // presjek sa x-osom: f(x) = 0
+    var xint = null;
+    var in0 = (rl.val() < -1e-15 || (rlc && Math.abs(rl.val()) < 1e-15)) && (rh.val() > 1e-15 || (rhc && Math.abs(rh.val()) < 1e-15));
+    if (in0) {
+      var t = D.neg().scale(ONE.div(A));
+      var u0 = trigExact(h, t);
+      if (u0) xint = numS(u0.addQ(C.neg()).mulQ(ONE.div(B)));
+      else xint = numApprox((hnum(t.val()) - C.val()) / B.val());
+      addPt(xint, numP(pr(0)), 'presjek sa x-osom', 'xint');
+    }
+    pts.sort(function (a, b) { return a.x.v - b.x.v; });
+
+    /* Asimptote */
+    var asym = [];
+    if (!bs.bounded) { asym.push(numP(rl)); asym.push(numP(rh)); }
+
+    /* 4. Transformacije grafika */
+    var steps = [];
+    var Bv = B.val(), Cv = C.val(), Av = A.val(), Dv = D.val();
+    var baseDom = bs.bounded ? [-1, 1] : null;
+    function domOf(b, c) { // domen od g(bx + c)
+      if (!baseDom) return null;
+      var a1 = (-1 - c) / b, a2 = (1 - c) / b;
+      return [Math.min(a1, a2), Math.max(a1, a2)];
+    }
+    steps.push({ title: 'Osnovna funkcija', eq: Y + ' = ' + fnName(g) + '(' + X + ')', skip: false,
+      desc: 'Polazimo od grafika ' + g + ' x. Domen ' + (bs.bounded ? '[' + MINUS + '1, 1]' : 'ℝ') + ', kodomen ' + ivPlain(bs.rng[0], bs.rng[1], bs.rng[2], bs.rng[3]) + '.',
+      why: 'Svaki složeniji grafik dobijamo od osnovnog nizom jednostavnih pomjeranja, sabijanja i odraza. Zato prvo treba znati napamet osnovni grafik (vidi "Osnovna pravila").',
+      fn: function (x) { return bs.num(x); }, dom: domOf(1, 0), u: [1, 0] });
+    var Babs = B.abs();
+    var bDesc = '';
+    if (B.isOne()) bDesc = 'B = 1, pa nema sabijanja ni odraza.';
+    else {
+      if (!Babs.isOne()) bDesc = (Babs.val() > 1 ? 'Grafik se sabija prema y-osi ' + fq(Babs) + ' puta (svaka x-koordinata se dijeli sa ' + fq(Babs) + ').' : 'Grafik se razvlači od y-ose ' + fq(ONE.div(Babs)) + ' puta (svaka x-koordinata se množi sa ' + fq(ONE.div(Babs)) + ').');
+      if (B.sign() < 0) bDesc += (bDesc ? ' Zatim ' : '') + (bDesc ? 'odraz' : 'Odraz') + ' preko y-ose, jer je B < 0.';
+    }
+    steps.push({ title: 'Faktor uz x', eq: Y + ' = ' + fnName(g) + '(' + linHtml(B, Z) + ')', skip: B.isOne(), desc: bDesc,
+      why: 'Vrijednost koju je ' + g + ' imao u tački x sada se dobija u tački x/B, jer je B·(x/B) = x. Zato se svaka tačka grafika pomjeri sa x na x/B: za |B| > 1 tačke se primaknu y-osi, za |B| < 1 se odmaknu, a negativan B ih prebaci na drugu stranu y-ose.',
+      fn: function (x) { return bs.num(Bv * x); }, dom: domOf(Bv, 0), u: [Bv, 0] });
+    var shift = C.neg().div(B);
+    var sDesc;
+    if (C.isZero()) sDesc = 'C = 0, pa nema pomjeranja po x-osi.';
+    else {
+      sDesc = linPlain(B, C) + ' = ' + (B.isOne() ? '' : fcoef(B)) + (B.isOne() ? '' : '(') + 'x' + (shift.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(shift, '') + (B.isOne() ? '' : ')') +
+        ', pa se grafik pomjera ' + (shift.sign() > 0 ? 'udesno' : 'ulijevo') + ' za ' + qMag(shift, '') + '.';
+    }
+    steps.push({ title: 'Pomjeranje po x-osi', eq: Y + ' = ' + fnName(g) + '(' + uH + ')', skip: C.isZero(), desc: sDesc,
+      why: 'Pomak se čita tek kad se B izvuče ispred zagrade: Bx + C = B(x + C/B). Zato je pomak ' + MINUS + 'C/B, a ne ' + MINUS + 'C. Pomak za C bi bio tačan samo kad je B = 1. Provjera: središnja tačka (u = 0) je tamo gdje je Bx + C = 0, tj. x = ' + MINUS + 'C/B' + (C.isZero() ? '' : ' = ' + fq(shift)) + '.',
+      fn: function (x) { return bs.num(Bv * x + Cv); }, dom: domOf(Bv, Cv), u: [Bv, Cv] });
+    var Aabs = A.abs(), aDesc = '';
+    if (A.isOne()) aDesc = 'A = 1, pa nema razvlačenja ni odraza po y-osi.';
+    else {
+      if (!Aabs.isOne()) aDesc = (Aabs.val() > 1 ? 'Grafik se razvlači po y-osi ' + fq(Aabs) + ' puta (svaka y-koordinata se množi sa ' + fq(Aabs) + ').' : 'Grafik se sabija po y-osi (svaka y-koordinata se množi sa ' + fq(Aabs) + ').');
+      if (A.sign() < 0) aDesc += (aDesc ? ' Zatim odraz' : 'Odraz') + ' preko x-ose, jer je A < 0.';
+    }
+    steps.push({ title: 'Faktor ispred funkcije', eq: Y + ' = ' + Agu, skip: A.isOne(), desc: aDesc,
+      why: 'Svaka vrijednost funkcije se množi sa A, pa se svaka tačka (x, y) pomjeri u (x, A·y). Visina se mijenja, širina ostaje ista. Negativan A znači da tačke iznad x-ose prelaze ispod nje i obrnuto.',
+      fn: function (x) { return Av * bs.num(Bv * x + Cv); }, dom: domOf(Bv, Cv), u: [Bv, Cv], scaleY: Av });
+    steps.push({ title: 'Pomjeranje po y-osi', eq: Y + ' = ' + fH, skip: D.isZero(),
+      desc: D.isZero() ? 'D = 0, pa nema pomjeranja po y-osi.' : 'Grafik se pomjera ' + (D.val() > 0 ? 'naviše' : 'naniže') + ' za ' + fp(D.val() > 0 ? D : D.neg()) + '.',
+      why: 'Dodavanje broja D povećava svaku vrijednost funkcije za D, pa se cijeli grafik podigne (D > 0) ili spusti (D < 0) za |D|. Oblik se ne mijenja.',
+      fn: fnum, dom: domOf(Bv, Cv), u: [Bv, Cv], final: true });
+
+    /* 5. Inverz */
+    var inv = [];
+    var invVar = Y;
+    inv.push({ math: Y + ' = ' + fH, rule: 'Pišemo y umjesto f(x).' });
+    var cur = Agu;
+    if (!D.isZero()) {
+      inv.push({ math: Y + hpTail(D.neg()) + ' = ' + Agu, rule: (pTerms(D).length > 1 ? 'Oduzimamo ' + wrapP(D) : (D.val() > 0 ? 'Oduzimamo ' + fp(D) : 'Dodajemo ' + fp(D.neg()))) + ' na obje strane, da arcus ostane sam.' });
+    }
+    var leftAfterA = innerHtmlSafe(A, D, Y);
+    if (!A.isOne()) {
+      var rawLeft = fr(D.isZero() ? Y : Y + hpTail(D.neg()), hq(A));
+      inv.push({ math: rawLeft + ' = ' + gu, rule: 'Dijelimo obje strane sa ' + fq(A) + ' (smije se jer je A ≠ 0).' });
+      if (A.sign() < 0 || A.d !== 1 || D.isZero()) {
+        if (leftAfterA !== rawLeft) inv.push({ math: leftAfterA + ' = ' + gu, rule: A.sign() < 0 ? 'Sređujemo: množimo brojilac i imenilac sa ' + MINUS + '1 da imenilac bude pozitivan.' : 'Sređujemo razlomak.' });
+      }
+    }
+    inv.push({ math: fnName(h) + '(' + leftAfterA + ') = ' + uH, rule: 'Primjenjujemo ' + h + ' na obje strane.',
+      why: h + '(' + g + ' u) = u važi za svako u iz domena od ' + g + (bs.bounded ? ' ([' + MINUS + '1, 1])' : ' (ℝ)') + ', pa desna strana postaje samo ' + linPlain(B, C) + '. Obrnuto ne važi uvijek: ' + g + '(' + h + ' t) = t samo za t ∈ ' + bs.restr + '. Npr. ' +
+        { arcsin: 'arcsin(sin π) = arcsin 0 = 0 ≠ π', arccos: 'arccos(cos 2π) = arccos 1 = 0 ≠ 2π', arctg: 'arctg(tg π) = arctg 0 = 0 ≠ π', arcctg: 'arcctg(ctg 3π/2) = arcctg 0 = π/2 ≠ 3π/2' }[g] +
+        '. Ovdje je sve u redu, jer je lijeva strana prije ovog koraka iz kodomena od ' + g + ' (to smo dobili za y ∈ K(f)).' });
+    var hpart = fnName(h) + '(' + leftAfterA + ')';
+    if (!C.isZero()) inv.push({ math: hpart + (C.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, '') + ' = ' + linHtml(B, Z), rule: (C.sign() > 0 ? 'Oduzimamo ' + fq(C) : 'Dodajemo ' + fq(C.neg())) + ' na obje strane.' });
+    var numer = hpart + (C.isZero() ? '' : (C.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, ''));
+    var yForm = finvHtml(h, A, B, C, D, Y);
+    if (!B.isOne()) {
+      inv.push({ math: X + ' = ' + fr(numer, hq(B)), rule: 'Dijelimo obje strane sa ' + fq(B) + '.' });
+      inv.push({ math: X + ' = ' + yForm, rule: C.isZero() ? 'Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + ', pa taj broj pišemo kao koeficijent ispred.' : 'Razdvajamo razlomak: (a ' + MINUS + ' b)/c = a/c ' + MINUS + ' b/c, i sređujemo znakove.' });
+    } else if (C.isZero()) {
+      inv[inv.length - 1].math = fnName(h) + '(' + leftAfterA + ') = ' + X;
+      inv.push({ math: X + ' = ' + yForm, rule: 'Okrenemo jednakost.' });
+    } else {
+      inv.push({ math: X + ' = ' + yForm, rule: 'Okrenemo jednakost.' });
+    }
+    /* neparnost/parnost: h(−t) kad je D = 0 i A < 0 */
+    var invA = A, invK = ONE.div(B);
+    if (D.isZero() && A.sign() < 0) {
+      invA = A.neg();
+      if (h !== 'cos') invK = invK.neg();
+      var tA = innerHtmlSafe(invA, D, '<i>t</i>');
+      inv.push({ math: X + ' = ' + finvHtml(h, invA, B, C, D, Y, invK),
+        rule: h === 'cos' ? 'cos je parna funkcija: cos(' + MINUS + 't) = cos t, pa minus u argumentu nestaje.' : h + ' je neparna funkcija: ' + h + '(' + MINUS + 't) = ' + MINUS + h + ' t, pa minus izlazi ispred.',
+        why: h === 'cos' ? 'Grafik kosinusa je simetričan u odnosu na y-osu, pa je vrijednost u ' + MINUS + 't ista kao u t.' : 'Grafik funkcije ' + h + ' je simetričan u odnosu na koordinatni početak, pa je vrijednost u ' + MINUS + 't suprotna vrijednosti u t.' });
+    }
+    var finvH = finvHtml(h, invA, B, C, D, X, invK);
+    inv.push({ math: '<i>f</i><sup>' + MINUS + '1</sup>(' + X + ') = ' + finvH, rule: 'Zamijenimo x i y.',
+      why: 'Po dogovoru, inverz pišemo sa x kao nezavisnom promjenljivom. Zamjena slova x ↔ y je isto što i odraz grafika preko prave y = x: tačka (a, b) prelazi u (b, a).' });
+    inv.push({ math: '<i>D</i>(<i>f</i><sup>' + MINUS + '1</sup>) = <i>K</i>(<i>f</i>) = ' + rngH + '<br><i>K</i>(<i>f</i><sup>' + MINUS + '1</sup>) = <i>D</i>(<i>f</i>) = ' + domH,
+      rule: 'Domen inverza je kodomen polazne funkcije, i obrnuto.',
+      why: 'f⁻¹ "vraća" ono što je f uradila: ulaz u f⁻¹ je izlaz iz f. Zato f⁻¹ prima samo brojeve iz K(f). Formula ' + h + '(…) je sama po sebi definisana ' + (h === 'sin' || h === 'cos' ? 'za svako x' : 'na mnogo širem skupu') + ', ali f⁻¹ je samo jedan luk te krive, iznad intervala ' + ivPlain(rl, rh, rlc, rhc) + '. Bez tog ograničenja ' + h + ' ne bi bila injektivna, pa ne bi bila inverz.' });
+
+    /* Rezultat */
+    var res = {
+      prob: prob, g: g, h: h, base: bs,
+      fHtml: fH, fPlain: fPlain(g, A, B, C, D), finvHtml: finvH, finvPlain: finvPlain(h, invA, B, C, D, 'x', invK),
+      dom: dom, rng: rng, domHtml: domH, rngHtml: rngH, domPlain: ivPlain(dom.lo, dom.hi, dom.lc, dom.hc), rngPlain: ivPlain(rl, rh, rlc, rhc),
+      inc: inc, monoWhy: monoWhy,
+      domLines: domLines, rngLines: rngLines, invLines: inv, steps: steps,
+      points: pts, asym: asym, assumptions: assumptions, notes: (prob.notes || []).concat(notes),
+      f: fnum, finv: finvnum, uFn: function (x) { return Bv * x + Cv; }
+    };
+    res.validation = validate(res);
+    return res;
+  }
+
+  /* ---------- Provjera ---------- */
+  function validate(r) {
+    var f = r.f, fi = r.finv, bs = r.base;
+    var lo = r.rng.lo.val(), hi = r.rng.hi.val();
+    var maxErr = 0, n = 0, problems = [];
+    var tolY = function (y) { return 1e-9 * (1 + Math.abs(y)); };
+    // f(f⁻¹(y)) = y na K(f)
+    for (var i = 0; i <= 400; i++) {
+      var t = i / 400;
+      var y = lo + (hi - lo) * t;
+      if ((i === 0 && !r.rng.lc) || (i === 400 && !r.rng.hc)) continue;
+      if (!bs.bounded) y = lo + (hi - lo) * (0.002 + 0.996 * t);
+      var x = fi(y);
+      if (!isFinite(x)) { problems.push('f⁻¹ nije definisana u tački ' + y.toFixed(4)); continue; }
+      if (bs.bounded && (x < r.dom.lo.val() - 1e-9 || x > r.dom.hi.val() + 1e-9)) problems.push('f⁻¹(' + y.toFixed(4) + ') je van domena od f');
+      var e = Math.abs(f(x) - y); n++;
+      if (e > maxErr) maxErr = e;
+      if (e > tolY(y) * 100) problems.push('f(f⁻¹(' + y.toFixed(4) + ')) ≠ ' + y.toFixed(4));
+    }
+    // f⁻¹(f(x)) = x na D(f)
+    var xl, xh;
+    if (bs.bounded) { xl = r.dom.lo.val(); xh = r.dom.hi.val(); }
+    else { var B = r.prob.B.val(), C = r.prob.C.val(); xl = Math.min((-8 - C) / B, (8 - C) / B); xh = Math.max((-8 - C) / B, (8 - C) / B); }
+    var maxErr2 = 0;
+    for (var j = 0; j <= 400; j++) {
+      var xx = xl + (xh - xl) * j / 400;
+      var back = fi(f(xx));
+      var e2 = Math.abs(back - xx) / (1 + Math.abs(xx)); n++;
+      if (e2 > maxErr2) maxErr2 = e2;
+      if (!(e2 < 1e-6)) problems.push('f⁻¹(f(' + xx.toFixed(4) + ')) ≠ ' + xx.toFixed(4));
+    }
+    // tačne vrijednosti tačaka
+    r.points.forEach(function (p) {
+      if (Math.abs(f(p.x.v) - p.y.v) > 1e-9 * (1 + Math.abs(p.y.v))) problems.push('tačka (' + p.x.plain + ', ' + p.y.plain + ') ne leži na grafiku');
+    });
+    // krajevi kodomena se slažu sa monotonošću
+    if (bs.bounded) {
+      var a = f(r.dom.lo.val()), b = f(r.dom.hi.val());
+      var expLo = r.inc ? a : b, expHi = r.inc ? b : a;
+      if (Math.abs(expLo - lo) > 1e-9 || Math.abs(expHi - hi) > 1e-9) problems.push('krajevi kodomena se ne slažu sa vrijednostima na krajevima domena');
+    }
+    return { ok: problems.length === 0, maxErr: Math.max(maxErr, maxErr2), n: n, problems: problems.slice(0, 5) };
+  }
+
+  /* ---------- Generator zadataka ---------- */
+  function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function randomProblem() {
+    for (var tries = 0; tries < 200; tries++) {
+      var g = rnd(['arcsin', 'arcsin', 'arccos', 'arccos', 'arctg', 'arcctg']);
+      var A = rnd([q(1), q(-1), q(2), q(-2), q(3), q(1, 2), q(-1, 2), q(2), q(1)]);
+      var B = rnd([q(1), q(-1), q(2), q(-2), q(3), q(1, 2), q(-3), q(1, 3), q(2)]);
+      var C = rnd([q(0), q(1), q(-1), q(2), q(-2), q(3), q(-3), q(1, 2)]);
+      var D = rnd([pr(0), pr(1), pr(-1), pr(2), pp(1, 2), pp(-1, 2), pp(1, 4), pp(1), pp(-1, 4), pr(0)]);
+      if (A.isOne() && B.isOne() && C.isZero() && D.isZero()) continue;
+      if (Math.abs(C.div(B).val()) > 4) continue;
+      if (Math.abs(D.val()) + Math.abs(A.val()) * 3.2 > 8) continue;
+      return { g: g, A: A, B: B, C: C, D: D, notes: [] };
+    }
+    return { g: 'arcsin', A: q(2), B: q(3), C: q(-1), D: pp(1, 4), notes: [] };
+  }
+
+  return {
+    parse: parse, solve: solve, randomProblem: randomProblem, MathErr: MathErr,
+    Q: Q, P: P, q: q, pr: pr, pp: pp, fp: fp, hp: hp, fq: fq, BASE: BASE, fHtml: fHtml, trigExact: trigExact, fs: fs, explainAddP: explainAddP, explainMul: explainMul
+  };
+})();
+if (typeof module !== 'undefined') module.exports = Arcus;
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var E = Arcus, MINUS = '−', PI = Math.PI;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+
+  /* ================= Notifikacije ================= */
+  var shownOnce = {};
+  function notify(kind, title, msg, opts) {
+    opts = opts || {};
+    if (opts.once) { if (shownOnce[opts.once]) return; shownOnce[opts.once] = 1; }
+    var box = $('#toasts');
+    var el = document.createElement('div');
+    el.className = 'toast t-' + kind;
+    el.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+    var label = { error: 'Nije moguće', warn: 'Pažnja', info: 'Napomena', ok: 'Gotovo' }[kind];
+    el.innerHTML = '<div class="t-body"><span class="t-kind">' + label + '</span><b>' + esc(title) + '</b><p>' + esc(msg) + '</p></div><button type="button" class="t-x" aria-label="Zatvori obavještenje">×</button>';
+    el.querySelector('.t-x').onclick = function () { el.remove(); };
+    box.appendChild(el);
+    while (box.children.length > 4) box.firstChild.remove();
+    var ms = opts.ms || (kind === 'error' ? 12000 : kind === 'warn' ? 9000 : 6000);
+    setTimeout(function () { el.classList.add('out'); setTimeout(function () { el.remove(); }, 300); }, ms);
+  }
+
+  /* ================= Crtanje ================= */
+  function niceUnit(s) { // razmak mreže u jedinicama tako da bude bar ~16px
+    var steps = [0.25, 0.5, 1, 2, 5, 10, 20];
+    for (var i = 0; i < steps.length; i++) if (steps[i] * s >= 16) return steps[i];
+    return 50;
+  }
+  function sampleBox(fn, lo, hi) {
+    var mn = Infinity, mx = -Infinity;
+    for (var i = 0; i <= 200; i++) { var y = fn(lo + (hi - lo) * i / 200); if (isFinite(y)) { mn = Math.min(mn, y); mx = Math.max(mx, y); } }
+    return [lo, hi, mn, mx];
+  }
+  function unite(a, b) { return [Math.min(a[0], b[0]), Math.max(a[1], b[1]), Math.min(a[2], b[2]), Math.max(a[3], b[3])]; }
+  /* jednake jedinice na osama; dodaje koordinatni početak i marginu; ograničava odnos stranica */
+  function makeWin(box, opt) {
+    opt = opt || {};
+    if (!opt.equal) { // nejednake jedinice: samo margina i koordinatni početak
+      var a0 = Math.min(box[0], 0), a1 = Math.max(box[1], 0), b0 = Math.min(box[2], 0), b1 = Math.max(box[3], 0);
+      var mw = 0.1 * (a1 - a0 || 1), mh = 0.1 * (b1 - b0 || 1);
+      return { x0: a0 - mw, x1: a1 + mw, y0: b0 - mh, y1: b1 + mh, ratio: opt.ratio || 0.78 };
+    }
+    var x0 = Math.min(box[0], 0), x1 = Math.max(box[1], 0), y0 = Math.min(box[2], 0), y1 = Math.max(box[3], 0);
+    var w = x1 - x0 || 1, h = y1 - y0 || 1;
+    var m = 0.12 * Math.max(w, h);
+    x0 -= m; x1 += m; y0 -= m; y1 += m; w = x1 - x0; h = y1 - y0;
+    var maxR = opt.maxRatio || 1.25, minR = opt.minRatio || 0.55; // h / w
+    if (h / w > maxR) { var dw = (h / maxR - w) / 2; x0 -= dw; x1 += dw; }
+    else if (h / w < minR) { var dh = (w * minR - h) / 2; y0 -= dh; y1 += dh; }
+    return { x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+  function f2(v) { return Math.round(v * 100) / 100; }
+
+  function plot(o) {
+    var W = 480, pad = 14;
+    var win = o.win, s = (W - 2 * pad) / (win.x1 - win.x0), sy = s;
+    var H = win.ratio ? Math.round(W * win.ratio) : Math.round((win.y1 - win.y0) * s + 2 * pad);
+    if (win.ratio) sy = (H - 2 * pad) / (win.y1 - win.y0);
+    var X = function (x) { return f2(pad + (x - win.x0) * s); }, Y = function (y) { return f2(pad + (win.y1 - y) * sy); };
+    var id = 'c' + Math.random().toString(36).slice(2, 8);
+    var g = [];
+    g.push('<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(o.label || 'Grafik') + '"><defs><clipPath id="' + id + '"><rect x="' + pad + '" y="' + pad + '" width="' + (W - 2 * pad) + '" height="' + (H - 2 * pad) + '"/></clipPath></defs>');
+    g.push('<rect class="pbg" x="0" y="0" width="' + W + '" height="' + H + '"/>');
+    // mreža
+    var u = niceUnit(s), k;
+    for (k = Math.ceil(win.x0 / u); k * u <= win.x1; k++) g.push('<line class="grid' + (k % 5 === 0 ? ' g5' : '') + '" x1="' + X(k * u) + '" y1="' + pad + '" x2="' + X(k * u) + '" y2="' + (H - pad) + '"/>');
+    u = niceUnit(sy);
+    for (k = Math.ceil(win.y0 / u); k * u <= win.y1; k++) g.push('<line class="grid' + (k % 5 === 0 ? ' g5' : '') + '" x1="' + pad + '" y1="' + Y(k * u) + '" x2="' + (W - pad) + '" y2="' + Y(k * u) + '"/>');
+    // ose
+    var ox = X(0), oy = Y(0);
+    g.push('<line class="axis" x1="' + pad + '" y1="' + oy + '" x2="' + (W - pad) + '" y2="' + oy + '"/><path class="arrow" d="M' + (W - pad) + ' ' + oy + 'l-9 -4v8z"/>');
+    g.push('<line class="axis" x1="' + ox + '" y1="' + (H - pad) + '" x2="' + ox + '" y2="' + pad + '"/><path class="arrow" d="M' + ox + ' ' + pad + 'l-4 9h8z"/>');
+    g.push('<text class="axl" x="' + (W - pad - 4) + '" y="' + (oy - 9) + '" text-anchor="end">x</text><text class="axl" x="' + (ox + 9) + '" y="' + (pad + 12) + '">y</text>');
+    g.push('<g clip-path="url(#' + id + ')">');
+    // y = x
+    if (o.diag) g.push('<line class="diag" x1="' + X(win.x0) + '" y1="' + Y(win.x0) + '" x2="' + X(win.x1) + '" y2="' + Y(win.x1) + '"/>');
+    // asimptote
+    (o.hasym || []).forEach(function (a) { g.push('<line class="asym ' + (a.cls || '') + '" x1="' + pad + '" y1="' + Y(a.v) + '" x2="' + (W - pad) + '" y2="' + Y(a.v) + '"/>'); });
+    (o.vasym || []).forEach(function (a) { g.push('<line class="asym ' + (a.cls || '') + '" x1="' + X(a.v) + '" y1="' + pad + '" x2="' + X(a.v) + '" y2="' + (H - pad) + '"/>'); });
+    // projekcije tačaka na ose
+    (o.pts || []).forEach(function (p) {
+      if (!p.proj) return;
+      if (Math.abs(p.y) > 1e-9) g.push('<line class="proj" x1="' + X(p.x) + '" y1="' + Y(p.y) + '" x2="' + X(p.x) + '" y2="' + oy + '"/>');
+      if (Math.abs(p.x) > 1e-9) g.push('<line class="proj" x1="' + X(p.x) + '" y1="' + Y(p.y) + '" x2="' + ox + '" y2="' + Y(p.y) + '"/>');
+    });
+    // krive
+    var ylim0 = win.y0 - (win.y1 - win.y0), ylim1 = win.y1 + (win.y1 - win.y0);
+    (o.curves || []).forEach(function (c) {
+      var lo = c.dom ? c.dom[0] : win.x0, hi = c.dom ? c.dom[1] : win.x1;
+      lo = Math.max(lo, c.dom && c.open ? lo : win.x0 - 1); hi = Math.min(hi, c.dom && c.open ? hi : win.x1 + 1);
+      if (c.dom && !c.open) { lo = Math.max(c.dom[0], win.x0 - 1); hi = Math.min(c.dom[1], win.x1 + 1); }
+      var N = 700, d = '', pen = false;
+      for (var i = 0; i <= N; i++) {
+        var t = i / N;
+        if (c.open) { t = (1 - Math.cos(PI * t)) / 2; t = 0.0005 + 0.999 * t; }
+        var x = lo + (hi - lo) * t, y = c.fn(x);
+        if (!isFinite(y) || y < ylim0 || y > ylim1) { pen = false; continue; }
+        d += (pen ? 'L' : 'M') + X(x) + ' ' + Y(y); pen = true;
+      }
+      g.push('<path class="curve ' + c.cls + '" d="' + d + '"/>');
+      if (c.dom && c.ends) {
+        [[c.dom[0], c.ends[0]], [c.dom[1], c.ends[1]]].forEach(function (e) {
+          var yy = c.fn(e[0]);
+          if (isFinite(yy)) g.push('<circle class="end ' + c.cls + (e[1] ? '' : ' hollow') + '" cx="' + X(e[0]) + '" cy="' + Y(yy) + '" r="4.2"/>');
+        });
+      }
+    });
+    (o.pts || []).forEach(function (p) { if (!p.end) g.push('<circle class="pt ' + (p.cls || '') + '" cx="' + X(p.x) + '" cy="' + Y(p.y) + '" r="3.4"/>'); });
+    g.push('</g>');
+    // oznake na osama (bez preklapanja)
+    function placeTicks(list, axis) {
+      var used = axis === 'x' ? [[ox - 6, 10]] : [[oy + 10, 8]];
+      list.slice().sort(function (a, b) { return (b.pri || 0) - (a.pri || 0); }).forEach(function (t) {
+        if (Math.abs(t.v) < 1e-12) return;
+        var pos = axis === 'x' ? X(t.v) : Y(t.v);
+        if (axis === 'x' ? (pos < pad + 8 || pos > W - pad - 14) : (pos < pad + 14 || pos > H - pad - 6)) return;
+        var half = axis === 'x' ? t.l.length * 4.4 + 6 : 9;
+        for (var i = 0; i < used.length; i++) if (Math.abs(used[i][0] - pos) < used[i][1] + half) return;
+        used.push([pos, half]);
+        if (axis === 'x') {
+          var below = oy + 17 < H - 2;
+          g.push('<line class="tick" x1="' + pos + '" y1="' + (oy - 4) + '" x2="' + pos + '" y2="' + (oy + 4) + '"/><text class="tl" x="' + pos + '" y="' + (below ? oy + 17 : oy - 8) + '" text-anchor="middle">' + esc(t.l) + '</text>');
+        } else {
+          var left = ox - 7 > 40;
+          g.push('<line class="tick" x1="' + (ox - 4) + '" y1="' + pos + '" x2="' + (ox + 4) + '" y2="' + pos + '"/><text class="tl" x="' + (left ? ox - 7 : ox + 7) + '" y="' + (pos + 4) + '" text-anchor="' + (left ? 'end' : 'start') + '">' + esc(t.l) + '</text>');
+        }
+      });
+    }
+    placeTicks(o.xt || [], 'x'); placeTicks(o.yt || [], 'y');
+    g.push('<text class="tl" x="' + (ox - 6) + '" y="' + (oy + 15) + '" text-anchor="end">O</text>');
+    g.push('</svg>');
+    if (o.legend && o.legend.length) g.push('<ul class="lg">' + o.legend.map(function (l) { return '<li><svg viewBox="0 0 24 8" aria-hidden="true"><line class="curve ' + l.cls + '" x1="1" y1="4" x2="23" y2="4"/></svg>' + esc(l.t) + '</li>'; }).join('') + '</ul>');
+    return g.join('');
+  }
+
+  /* ---- grafici za rezultat ---- */
+  function fBox(r) {
+    var bs = r.base, B = r.prob.B.val(), C = r.prob.C.val();
+    var lo, hi;
+    if (bs.bounded) { lo = r.dom.lo.val(); hi = r.dom.hi.val(); }
+    else { var a = (-6 - C) / B, b = (6 - C) / B; lo = Math.min(a, b); hi = Math.max(a, b); }
+    var bx = sampleBox(r.f, lo, hi);
+    bx[2] = Math.min(bx[2], r.rng.lo.val()); bx[3] = Math.max(bx[3], r.rng.hi.val());
+    return bx;
+  }
+  function ticksFor(r, inverse) {
+    var xt = [], yt = [];
+    r.points.forEach(function (p) {
+      var pri = p.kind === 'end' ? 3 : p.kind === 'mid' ? 2 : 1;
+      var a = { v: p.x.v, l: p.x.plain, pri: pri }, b = { v: p.y.v, l: p.y.plain, pri: pri };
+      if (inverse) { xt.push(b); yt.push(a); } else { xt.push(a); yt.push(b); }
+    });
+    r.asym.forEach(function (a) { (inverse ? xt : yt).push({ v: a.v, l: a.plain, pri: 4 }); });
+    return { xt: xt, yt: yt };
+  }
+  function fCurve(r, cls) {
+    var bs = r.base;
+    return { fn: r.f, dom: bs.bounded ? [r.dom.lo.val(), r.dom.hi.val()] : null, ends: bs.bounded ? [true, true] : null, cls: cls || 'cf' };
+  }
+  function invCurve(r, cls) {
+    var lo = r.rng.lo.val(), hi = r.rng.hi.val();
+    return { fn: r.finv, dom: [lo, hi], open: !r.rng.lc || !r.rng.hc, ends: r.rng.lc && r.rng.hc ? [true, true] : null, cls: cls || 'ci' };
+  }
+  function ptsFor(r, inverse, cls) {
+    return r.points.map(function (p) { return { x: inverse ? p.y.v : p.x.v, y: inverse ? p.x.v : p.y.v, proj: true, cls: cls, end: p.kind === 'end' }; });
+  }
+  function graphF(r) {
+    var t = ticksFor(r, false);
+    return plot({ win: makeWin(fBox(r)), curves: [fCurve(r)], pts: ptsFor(r, false, 'cf'), xt: t.xt, yt: t.yt,
+      hasym: r.asym.map(function (a) { return { v: a.v, cls: 'cf' }; }), label: 'Grafik funkcije f', legend: [{ t: 'f(x) = ' + r.fPlain, cls: 'cf' }] });
+  }
+  function graphInv(r) {
+    var b = fBox(r), t = ticksFor(r, true);
+    return plot({ win: makeWin([b[2], b[3], b[0], b[1]]), curves: [invCurve(r)], pts: ptsFor(r, true, 'ci'), xt: t.xt, yt: t.yt,
+      vasym: r.asym.map(function (a) { return { v: a.v, cls: 'ci' }; }), label: 'Grafik inverzne funkcije', legend: [{ t: 'f⁻¹(x) = ' + r.finvPlain, cls: 'ci' }] });
+  }
+  function graphBoth(r) {
+    var b = fBox(r), box = unite(b, [b[2], b[3], b[0], b[1]]);
+    var t1 = ticksFor(r, false), t2 = ticksFor(r, true);
+    return plot({ win: makeWin(box, { equal: true, maxRatio: 1.05, minRatio: 0.8 }), curves: [fCurve(r), invCurve(r)], diag: true,
+      pts: ptsFor(r, false, 'cf').concat(ptsFor(r, true, 'ci')).map(function (p) { p.proj = false; return p; }),
+      xt: t1.xt.concat(t2.xt), yt: t1.yt.concat(t2.yt),
+      hasym: r.asym.map(function (a) { return { v: a.v, cls: 'cf' }; }), vasym: r.asym.map(function (a) { return { v: a.v, cls: 'ci' }; }),
+      label: 'Grafici f i f⁻¹ sa pravom y = x', legend: [{ t: 'f', cls: 'cf' }, { t: 'f⁻¹', cls: 'ci' }, { t: 'y = x', cls: 'cd' }] });
+  }
+
+  /* ---- koraci transformacije ---- */
+  function stepBox(st) {
+    var lo, hi;
+    if (st.dom) { lo = st.dom[0]; hi = st.dom[1]; }
+    else { var a = (-6 - st.u[1]) / st.u[0], b = (6 - st.u[1]) / st.u[0]; lo = Math.min(a, b); hi = Math.max(a, b); }
+    return sampleBox(st.fn, lo, hi);
+  }
+  function stepAsym(r, st, i) {
+    if (r.base.bounded) return [];
+    var lo = r.base.rng[0].val(), hi = r.base.rng[1].val();
+    var A = i >= 3 ? r.prob.A.val() : 1, D = i >= 4 ? r.prob.D.val() : 0;
+    return [lo * A + D, hi * A + D];
+  }
+  function graphStep(r, i, win) {
+    var st = r.steps[i];
+    var prev = null;
+    for (var j = i - 1; j >= 0; j--) if (!r.steps[j].skip) { prev = j; break; }
+    var curves = [];
+    if (prev !== null) curves.push({ fn: r.steps[prev].fn, dom: r.steps[prev].dom, ends: r.steps[prev].dom ? [true, true] : null, cls: 'cg' });
+    curves.push({ fn: st.fn, dom: st.dom, ends: st.dom ? [true, true] : null, cls: 'cf' });
+    var xt = [], yt = [];
+    if (st.dom) { xt.push({ v: st.dom[0], l: fmtNum(st.dom[0]), pri: 3 }); xt.push({ v: st.dom[1], l: fmtNum(st.dom[1]), pri: 3 }); yt.push({ v: st.fn(st.dom[0]), l: fmtNum(st.fn(st.dom[0]), true), pri: 3 }); yt.push({ v: st.fn(st.dom[1]), l: fmtNum(st.fn(st.dom[1]), true), pri: 3 }); }
+    var c0 = -st.u[1] / st.u[0];
+    xt.push({ v: c0, l: fmtNum(c0), pri: 2 }); yt.push({ v: st.fn(c0), l: fmtNum(st.fn(c0), true), pri: 2 });
+    var as = stepAsym(r, st, i);
+    as.forEach(function (v) { yt.push({ v: v, l: fmtNum(v, true), pri: 4 }); });
+    var leg = [{ t: 'korak ' + (i + 1), cls: 'cf' }];
+    if (prev !== null) leg.push({ t: 'korak ' + (prev + 1), cls: 'cg' });
+    return plot({ win: win, curves: curves, xt: xt, yt: yt, hasym: as.map(function (v) { return { v: v, cls: 'cf' }; }),
+      pts: [{ x: c0, y: st.fn(c0), proj: true, cls: 'cf' }], label: 'Korak ' + (i + 1) + ' skiciranja', legend: leg });
+  }
+  /* broj → tekst sa π gdje je moguće (samo za oznake na grafiku koraka) */
+  function fmtNum(v, piOk) {
+    if (Math.abs(v) < 1e-12) return '0';
+    var fracs = [1, 2, 3, 4, 6, 8, 12];
+    function asFrac(x, unit) {
+      for (var i = 0; i < fracs.length; i++) {
+        var d = fracs[i], n = Math.round(x * d);
+        if (Math.abs(n / d - x) < 1e-9 && Math.abs(n) < 400) {
+          var g = (function gcd(a, b) { return b ? gcd(b, a % b) : Math.abs(a); })(n, d); n /= g; var dd = d / g;
+          var sgn = n < 0 ? MINUS : ''; n = Math.abs(n);
+          var top = unit ? (n === 1 ? '' : n) + unit : String(n);
+          return sgn + top + (dd === 1 ? '' : '/' + dd);
+        }
+      }
+      return null;
+    }
+    var r = asFrac(v, '');
+    if (r) return r;
+    if (piOk) {
+      var p = asFrac(v / PI, 'π'); if (p) return p;
+      for (var a = -6; a <= 6; a++) {
+        if (!a) continue;
+        var pb = asFrac((v - a) / PI, 'π');
+        if (pb) return pb[0] === MINUS ? a + ' ' + MINUS + ' ' + pb.slice(1) : (a < 0 ? pb + ' ' + MINUS + ' ' + (-a) : a + ' + ' + pb);
+      }
+    }
+    return ('≈' + (Math.round(v * 100) / 100)).replace('-', MINUS).replace('.', ',');
+  }
+
+  /* ================= Prikaz rješenja ================= */
+  function whyHtml(w) { return w ? '<details class="why"><summary>Zašto?</summary><p>' + esc(w) + '</p></details>' : ''; }
+  function linesHtml(lines) {
+    return '<ol class="lines">' + lines.map(function (l) {
+      return '<li><div class="m">' + l.math + '</div><div class="rule">' + esc(l.rule) + '</div>' + whyHtml(l.why) + '</li>';
+    }).join('') + '</ol>';
+  }
+  var UNEQ = '<p class="cap">Jedinice na x i y osi nisu iste, da bi skica bila pregledna. Na grafiku "f i f⁻¹ zajedno" jesu iste.</p>';
+  var FI = '<i>f</i><sup>' + MINUS + '1</sup>';
+  function summaryHtml(r) {
+    return '<dl class="sum">' +
+      '<dt><i>f</i>(<i>x</i>)</dt><dd class="m">' + r.fHtml + '</dd>' +
+      '<dt><i>D</i>(<i>f</i>)</dt><dd class="m">' + r.domHtml + '</dd>' +
+      '<dt><i>K</i>(<i>f</i>)</dt><dd class="m">' + r.rngHtml + '</dd>' +
+      '<dt>tok</dt><dd>' + (r.inc ? 'strogo rastuća' : 'strogo opadajuća') + ', pa je injektivna i inverz postoji</dd>' +
+      '<dt class="ci-t">' + FI + '(<i>x</i>)</dt><dd class="m ci-t">' + r.finvHtml + '</dd>' +
+      '<dt><i>D</i>(' + FI + ')</dt><dd class="m">' + r.rngHtml + '</dd>' +
+      '<dt><i>K</i>(' + FI + ')</dt><dd class="m">' + r.domHtml + '</dd></dl>';
+  }
+  function pointsTable(r) {
+    var rows = r.points.map(function (p) {
+      var lbl = p.kind === 'end' ? 'kraj domena' : p.kind === 'mid' ? (p.label === 'u = 0' ? 'argument = 0' : 'argument = ' + p.label.slice(4)) : p.label;
+      return '<tr><td>' + esc(lbl) + '</td><td class="m">' + p.x.html + '</td><td class="m">' + p.y.html + '</td><td class="m ci-t">(' + p.y.html + ', ' + p.x.html + ')</td></tr>';
+    }).join('');
+    var asy = r.asym.length ? '<p class="note">Horizontalne asimptote od f: <span class="m"><i>y</i> = ' + r.asym[0].html + '</span> i <span class="m"><i>y</i> = ' + r.asym[1].html + '</span>. Kod ' + FI + ' to postaju vertikalne asimptote <span class="m"><i>x</i> = ' + r.asym[0].html + '</span> i <span class="m"><i>x</i> = ' + r.asym[1].html + '</span>.</p>' : '';
+    return '<div class="tw"><table class="pts"><thead><tr><th>tačka</th><th><i>x</i></th><th><i>f</i>(<i>x</i>)</th><th class="ci-t">tačka na ' + FI + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + asy +
+      whyHtml('Ove tačke su dovoljne za skicu: krajevi domena daju krajeve grafika, tačka gdje je argument 0 je "središte" arcus funkcije, a presjeci sa osama se crtaju uvijek. Svaka tačka (a, b) grafika f daje tačku (b, a) grafika f⁻¹, zato je posljednja kolona samo zamijenjen par.') +
+      (r.points.some(function (p) { return !p.x.exact || !p.y.exact; }) ? '<p class="note">Vrijednosti sa ≈ nisu "lijepi" brojevi, pa su date približno, na tri decimale. Na kolokvijumu se takva tačka obično samo ucrta, bez tačne vrijednosti.</p>' : '');
+  }
+
+  function renderSolution(r, host, opts) {
+    opts = opts || {};
+    var steps = r.steps;
+    var sbox = null;
+    steps.forEach(function (st) { if (!st.skip) sbox = sbox ? unite(sbox, stepBox(st)) : stepBox(st); });
+    var swin = makeWin(sbox, { maxRatio: 1.1, minRatio: 0.6 });
+    var bar = steps.map(function (st, i) {
+      return '<button type="button" class="sb' + (st.skip ? ' skip' : '') + '" data-i="' + i + '" aria-pressed="false"><b>' + (i + 1) + '</b><span>' + esc(st.title) + '</span></button>';
+    }).join('');
+    var html = '';
+    if (!opts.noSummary) {
+      html += '<section class="res-top"><div class="card sumcard"><h3 class="h3">Rezultat</h3>' + summaryHtml(r) +
+        '<details class="assume"><summary>Pretpostavke (' + r.assumptions.length + ')</summary><ul>' + r.assumptions.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul></details></div>' +
+        '<figure class="card fig"><figcaption>f i f⁻¹ zajedno</figcaption>' + graphBoth(r) + '<p class="cap">Grafici su simetrični u odnosu na pravu <span class="m"><i>y</i> = <i>x</i></span>.</p></figure></section>';
+    }
+    html += '<section class="sec"><h3 class="h3"><span class="no">1</span>Domen funkcije f</h3>' + linesHtml(r.domLines) + '<p class="res">D(f) = <span class="m">' + r.domHtml + '</span></p></section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">2</span>Kodomen funkcije f</h3>' + linesHtml(r.rngLines) + '<p class="res">K(f) = <span class="m">' + r.rngHtml + '</span></p></section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">3</span>Monotonost i postojanje inverza</h3><p>f je <b>' + (r.inc ? 'strogo rastuća' : 'strogo opadajuća') + '</b>.</p>' + whyHtml(r.monoWhy) + '</section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">4</span>Karakteristične tačke</h3>' + pointsTable(r) + '</section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">5</span>Skica funkcije f, korak po korak</h3><div class="stepbar" role="group" aria-label="Koraci skiciranja">' + bar + '</div><div class="stepview"><div class="card fig stepfig"></div><div class="stepcap"></div></div>' +
+      '<figure class="card fig final"><figcaption>Konačna skica funkcije f</figcaption>' + graphF(r) + UNEQ + '</figure></section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">6</span>Inverzna funkcija</h3>' + linesHtml(r.invLines) + '<p class="res">' + FI + '(<i>x</i>) = <span class="m">' + r.finvHtml + '</span>, &nbsp;<i>x</i> ∈ <span class="m">' + r.rngHtml + '</span></p></section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">7</span>Skica inverzne funkcije</h3><figure class="card fig final"><figcaption>Skica funkcije f⁻¹</figcaption>' + graphInv(r) + UNEQ + '</figure>' +
+      '<p>Grafik f⁻¹ je odraz grafika f preko prave <span class="m"><i>y</i> = <i>x</i></span>. ' + (r.base.bounded ? 'To je samo jedan luk funkcije ' + r.h + ', iznad intervala ' + esc(r.rngPlain) + ', a ne cijela kriva.' : 'Horizontalne asimptote od f postaju vertikalne asimptote od f⁻¹.') + '</p>' +
+      whyHtml('Tačka (a, b) je na grafiku f ako je f(a) = b. Tada je f⁻¹(b) = a, pa je (b, a) na grafiku f⁻¹. Tačke (a, b) i (b, a) su uvijek simetrične u odnosu na pravu y = x, pa je i cijeli grafik f⁻¹ odraz grafika f preko te prave.') + '</section>';
+    var v = r.validation;
+    html += '<section class="sec"><h3 class="h3"><span class="no">8</span>Provjera</h3><p class="okline">Provjereno računarom: <span class="m">' + FI + '(<i>f</i>(<i>x</i>)) = <i>x</i></span> i <span class="m"><i>f</i>(' + FI + '(<i>x</i>)) = <i>x</i></span> u ' + v.n + ' tačaka, najveće odstupanje ' + (v.maxErr < 1e-15 ? 'manje od 10<sup>−15</sup>' : (function (e) { var m = e.toExponential(0).split('e'); return m[0] + '·10<sup>' + m[1].replace('-', '−') + '</sup>'; })(v.maxErr)) + ' (greška zaokruživanja). Sve karakteristične tačke leže na grafiku.</p>' +
+      whyHtml('Ova provjera hvata greške u formuli inverza. Ako bi provjera pala, rješavač ne bi prikazao rezultat, nego obavještenje. Na kolokvijumu istu provjeru možeš uraditi ručno: uvrsti jednu tačku iz tabele u f⁻¹ i vidi da li dobiješ njen x.') + '</section>';
+    host.innerHTML = html;
+
+    var fig = host.querySelector('.stepfig'), cap = host.querySelector('.stepcap');
+    function show(i) {
+      var st = steps[i];
+      host.querySelectorAll('.sb').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.i == i ? 'true' : 'false'); });
+      fig.innerHTML = graphStep(r, i, swin);
+      cap.innerHTML = '<p class="stepeq m">' + st.eq + '</p><p>' + (st.skip ? '<span class="pill">preskače se</span> ' : '') + esc(st.desc) + '</p>' + (st.skip ? '' : whyHtml(st.why));
+    }
+    host.querySelectorAll('.sb').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); }; });
+    show(steps.length - 1);
+  }
+
+  /* ================= Rješavač ================= */
+  function recognized(p) {
+    var D = p.D;
+    return 'Prepoznato: g = ' + p.g + ', A = ' + E.fq(p.A) + ', B = ' + E.fq(p.B) + ', C = ' + E.fq(p.C) + ', D = ' + E.fp(D);
+  }
+  function solveInput(src, silent) {
+    var out = $('#out'), banner = $('#banner'), rec = $('#rec');
+    if (!silent) $('#toasts').innerHTML = '';
+    var p, r;
+    try {
+      p = E.parse(src);
+      r = E.solve(p);
+    } catch (e) {
+      if (!(e instanceof E.MathErr)) { e = new E.MathErr('Neočekivana greška', 'Rješavač nije uspio obraditi ovaj unos. Provjeri zapis ili javi primjer da se popravi.'); console.error(e); }
+      out.innerHTML = ''; rec.textContent = '';
+      banner.hidden = false; banner.innerHTML = '<b>' + esc(e.title) + '</b><p>' + esc(e.message) + '</p><p class="sub">Rješenje nije prikazano, da ne bi bilo pogrešno.</p>';
+      notify('error', e.title, e.message);
+      return null;
+    }
+    if (!r.validation.ok) {
+      out.innerHTML = ''; rec.textContent = recognized(p);
+      var msg = 'Automatska provjera inverza nije prošla (' + r.validation.problems[0] + '). Rezultat je blokiran da ne bi bio pogrešan.';
+      banner.hidden = false; banner.innerHTML = '<b>Provjera nije prošla</b><p>' + esc(msg) + '</p>';
+      notify('error', 'Provjera nije prošla', msg);
+      return null;
+    }
+    banner.hidden = true;
+    rec.textContent = recognized(p) + '  →  f(x) = ' + r.fPlain;
+    renderSolution(r, out);
+    if (!silent) {
+      p.notes.forEach(function (n) { notify('info', 'Kako je unos shvaćen', n); });
+      if (r.g === 'arcctg') notify('info', 'Dogovor za arcctg', 'Računam sa kodomenom arcctg = (0, π). Ako vaša skripta koristi drugi dogovor, kodomen i inverz se mijenjaju.', { once: 'arcctg' });
+      if (r.points.some(function (t) { return !t.x.exact || !t.y.exact; })) notify('info', 'Približne vrijednosti', 'Neki presjek sa osom nije "lijep" broj, pa je dat približno (≈). Ostalo je izračunato tačno.', { once: 'approx' });
+    }
+    try { localStorage.setItem('arcus-last', src); } catch (e) { /* bez memorije */ }
+    return r;
+  }
+
+  /* ================= Vježba ================= */
+  var current = null;
+  function newExercise() {
+    var p = E.randomProblem(), r = E.solve(p);
+    if (!r.validation.ok) { notify('error', 'Zadatak preskočen', 'Generisani zadatak nije prošao provjeru, pa je napravljen novi.'); return newExercise(); }
+    current = r;
+    $('#ex-task').innerHTML = 'Skicirati funkciju <span class="m"><i>f</i>(<i>x</i>) = ' + r.fHtml + '</span>, te odrediti i skicirati inverznu funkciju.';
+    $('#ex-graphs').innerHTML = '<figure class="card fig"><figcaption>Skica funkcije f</figcaption>' + graphF(r) + '</figure><figure class="card fig"><figcaption>Skica funkcije f⁻¹</figcaption>' + graphInv(r) + '</figure>' + UNEQ;
+    $('#ex-ans').innerHTML = '<div class="card sumcard">' + summaryHtml(r) + '</div>';
+    var sol = $('#ex-sol'); sol.hidden = true; sol.innerHTML = '';
+    $('#ex-show').textContent = 'Prikaži postupak';
+    $('#ex-show').setAttribute('aria-expanded', 'false');
+  }
+
+  /* ================= Osnovna pravila ================= */
+  function rulesGraphs() {
+    var host = $('#base-graphs');
+    var items = [
+      ['arcsin', 'sin suženi na [−π/2, π/2]', [-1, 1], [-PI / 2, PI / 2], true, 'rastuća', '[−1, 1]', '[−π/2, π/2]'],
+      ['arccos', 'cos suženi na [0, π]', [-1, 1], [0, PI], true, 'opadajuća', '[−1, 1]', '[0, π]'],
+      ['arctg', 'tg suženi na (−π/2, π/2)', null, [-PI / 2, PI / 2], false, 'rastuća', 'ℝ', '(−π/2, π/2)'],
+      ['arcctg', 'ctg suženi na (0, π)', null, [0, PI], false, 'opadajuća', 'ℝ', '(0, π)']
+    ];
+    host.innerHTML = items.map(function (it) {
+      var bs = E.BASE[it[0]];
+      var box = it[2] ? [-1, 1, it[3][0], it[3][1]] : [-4, 4, it[3][0], it[3][1]];
+      var win = makeWin(box, { maxRatio: 0.9, minRatio: 0.6 });
+      var xt = it[2] ? [{ v: -1, l: '−1', pri: 3 }, { v: 1, l: '1', pri: 3 }] : [{ v: -1, l: '−1', pri: 2 }, { v: 1, l: '1', pri: 2 }];
+      var yt = [{ v: it[3][0], l: fmtNum(it[3][0], true), pri: 3 }, { v: it[3][1], l: fmtNum(it[3][1], true), pri: 3 }];
+      if (it[0] === 'arccos' || it[0] === 'arcctg') yt.push({ v: PI / 2, l: 'π/2', pri: 2 });
+      if (!it[2]) { yt.push({ v: bs.num(1), l: fmtNum(bs.num(1), true), pri: 1 }); }
+      var svg = plot({ win: win, curves: [{ fn: bs.num, dom: it[2], ends: it[2] ? [true, true] : null, cls: 'cf' }], xt: xt, yt: yt,
+        hasym: it[2] ? [] : [{ v: it[3][0], cls: 'cf' }, { v: it[3][1], cls: 'cf' }], pts: [], label: 'Grafik ' + it[0] });
+      return '<figure class="card bfig"><figcaption><b>' + it[0] + '</b> x</figcaption>' + svg +
+        '<dl class="mini"><dt>D</dt><dd>' + it[6] + '</dd><dt>K</dt><dd>' + it[7] + '</dd><dt>tok</dt><dd>' + it[5] + '</dd><dt>inverz od</dt><dd>' + it[1] + '</dd></dl></figure>';
+    }).join('');
+  }
+
+  /* ================= Navigacija ================= */
+  var VIEWS = ['rjesavac', 'vjezba', 'pravila'];
+  function route() {
+    var h = (location.hash || '').slice(1);
+    if (VIEWS.indexOf(h) < 0) h = 'rjesavac';
+    VIEWS.forEach(function (v) {
+      $('#v-' + v).hidden = v !== h;
+      var t = $('#tab-' + v); t.setAttribute('aria-selected', v === h ? 'true' : 'false');
+    });
+    if (h === 'vjezba' && !current) newExercise();
+    if (h === 'pravila' && !$('#base-graphs').innerHTML) rulesGraphs();
+  }
+
+  /* ================= Pokretanje ================= */
+  function insertAtCursor(inp, text) {
+    var s = inp.selectionStart != null ? inp.selectionStart : inp.value.length, e = inp.selectionEnd != null ? inp.selectionEnd : s;
+    inp.value = inp.value.slice(0, s) + text + inp.value.slice(e);
+    var pos = s + text.length; inp.focus();
+    try { inp.setSelectionRange(pos, pos); } catch (er) { /* */ }
+  }
+  function start() {
+    var inp = $('#fx');
+    var last = null;
+    try { last = localStorage.getItem('arcus-last'); } catch (e) { last = null; }
+    inp.value = last || '2arcsin(3x − 1) + π/4';
+    $('#solve-form').addEventListener('submit', function (ev) { ev.preventDefault(); if (solveInput(inp.value)) $('#out').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    document.querySelectorAll('.key').forEach(function (k) {
+      k.addEventListener('click', function () {
+        if (k.dataset.k === 'del') { inp.value = ''; inp.focus(); return; }
+        insertAtCursor(inp, k.dataset.k);
+      });
+    });
+    document.querySelectorAll('.ex').forEach(function (b) {
+      b.addEventListener('click', function () { inp.value = b.dataset.f; solveInput(inp.value); });
+    });
+    $('#ex-new').onclick = newExercise;
+    $('#ex-show').onclick = function () {
+      var sol = $('#ex-sol');
+      if (sol.hidden) { renderSolution(current, sol, { noSummary: true }); sol.hidden = false; this.textContent = 'Sakrij postupak'; this.setAttribute('aria-expanded', 'true'); }
+      else { sol.hidden = true; this.textContent = 'Prikaži postupak'; this.setAttribute('aria-expanded', 'false'); }
+    };
+    $('#ex-open').onclick = function () { if (!current) return; inp.value = current.fPlain; location.hash = 'rjesavac'; solveInput(inp.value); };
+    window.addEventListener('hashchange', route);
+    solveInput(inp.value, true);
+    route();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+</script>
+
+</body></html>

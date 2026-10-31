@@ -52,6 +52,9 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
 .keys{display:flex;flex-wrap:wrap;gap:6px}
 .key{font:17px var(--f-math);min-width:44px;min-height:38px;padding:4px 10px;border-radius:4px;border:1px solid var(--rule);background:var(--chip);color:var(--ink);cursor:pointer}
 .key.w{font-family:var(--f-body);font-size:14px}
+.kinds{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.kind{font:600 14px var(--f-body);padding:6px 12px;border-radius:999px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);cursor:pointer}
+.kind[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .exs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:14px;color:var(--ink-2)}
 .ex{font:15px var(--f-math);padding:3px 9px;border-radius:999px;border:1px dashed var(--ink-2);background:transparent;color:var(--ink);cursor:pointer}
 .rec{font-size:13.5px;color:var(--ink-2);margin:0 0 14px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -226,7 +229,7 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
 <div class="page">
   <p class="eyebrow">Matematika · 1. zadatak kolokvijuma</p>
   <h1>Rješavač inverznih funkcija</h1>
-  <p class="lede">"Skicirati datu funkciju, te odrediti i skicirati inverznu funkciju." Upiši arcus funkciju i dobićeš cijeli postupak redom: domen, kodomen, skicu korak po korak, inverz i njegovu skicu. Uz svaki korak piše koje je pravilo primijenjeno, a pod "Zašto?" i razlog.</p>
+  <p class="lede">"Skicirati datu funkciju, te odrediti i skicirati inverznu funkciju." Upiši arcus funkciju (arcsin, arccos, arctg, arcctg) ili trigonometrijsku funkciju (sin, cos, tg, ctg) i dobićeš cijeli postupak redom: domen, kodomen, skicu korak po korak, inverz i skicu inverza korak po korak. Uz svaki korak piše koje je pravilo primijenjeno, a pod "Zašto?" i razlog.</p>
 
   <nav class="tabs" role="tablist" aria-label="Dijelovi stranice">
     <a id="tab-rjesavac" role="tab" href="#rjesavac" aria-selected="true">Rješavač</a>
@@ -247,6 +250,10 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
         <button type="button" class="key w" data-k="arccos(">arccos</button>
         <button type="button" class="key w" data-k="arctg(">arctg</button>
         <button type="button" class="key w" data-k="arcctg(">arcctg</button>
+        <button type="button" class="key w" data-k="sin(">sin</button>
+        <button type="button" class="key w" data-k="cos(">cos</button>
+        <button type="button" class="key w" data-k="tg(">tg</button>
+        <button type="button" class="key w" data-k="ctg(">ctg</button>
         <button type="button" class="key" data-k="π">π</button>
         <button type="button" class="key" data-k="x"><i>x</i></button>
         <button type="button" class="key" data-k="(">(</button>
@@ -260,6 +267,8 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
         <button type="button" class="ex" data-f="arccos(1 − 2x)">arccos(1 − 2x)</button>
         <button type="button" class="ex" data-f="π/2 − arctg(x/2)">π/2 − arctg(x/2)</button>
         <button type="button" class="ex" data-f="−3arcctg(2x + 1) + 1">−3arcctg(2x + 1) + 1</button>
+        <button type="button" class="ex" data-f="2sin(2x − π/3) + 1">2sin(2x − π/3) + 1</button>
+        <button type="button" class="ex" data-f="−tg(x + π/4)">−tg(x + π/4)</button>
       </p>
     </form>
     <p id="rec" class="rec" aria-live="polite"></p>
@@ -268,6 +277,11 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
   </section>
 
   <section id="v-vjezba" role="tabpanel" aria-labelledby="tab-vjezba" hidden>
+    <div class="kinds" role="group" aria-label="Vrsta zadataka">
+      <button type="button" class="kind" data-kind="all" aria-pressed="true">Sve</button>
+      <button type="button" class="kind" data-kind="arc" aria-pressed="false">Arcus funkcije</button>
+      <button type="button" class="kind" data-kind="trig" aria-pressed="false">sin, cos, tg, ctg</button>
+    </div>
     <p class="task" id="ex-task"></p>
     <div class="exbar">
       <button type="button" class="btn" id="ex-new">Novi zadatak</button>
@@ -284,6 +298,10 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
     <p>Svaka arcus funkcija je inverz trigonometrijske funkcije, ali ne cijele, nego samo jednog njenog dijela na kojem je ta funkcija injektivna. Taj dio određuje kodomen arcus funkcije.</p>
     <div class="bgrid" id="base-graphs"></div>
 
+    <h2>sin, cos, tg i ctg: lukovi na kojima postoji inverz</h2>
+    <p>Trigonometrijske funkcije su periodične, pa nisu injektivne na cijelom domenu: sin 0 = sin π = 0. Inverz postoji samo na jednom luku na kojem je funkcija strogo monotona. Standardni lukovi (podebljani na grafiku) su tačno kodomeni arcus funkcija. Kad je zadato f(x) = A·sin(Bx + C) + D bez intervala, uzima se da je argument Bx + C na tom luku.</p>
+    <div class="bgrid" id="trig-graphs"></div>
+
     <h2>Kada inverz postoji</h2>
     <p>Funkcija f ima inverz samo ako je <b>injektivna</b>: različiti x daju različite f(x). Na grafiku: svaka horizontalna prava siječe grafik najviše jednom. Tada f⁻¹ "vraća" svaku vrijednost f(x) nazad u x.</p>
     <p>Najlakši način da se to pokaže: f je <b>strogo monotona</b> (samo raste ili samo opada). Funkcija A·g(Bx + C) + D je uvijek strogo monotona kad su A ≠ 0 i B ≠ 0. Smjer određuju tri znaka: da li g raste, znak od B i znak od A. Svaki "minus" obrne smjer.</p>
@@ -295,8 +313,24 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
       <li><b>Skica f.</b> Od osnovnog grafika: faktor uz x, pa pomjeranje po x, pa faktor ispred, pa pomjeranje po y. Ucrtaj krajeve i presjeke sa osama.</li>
       <li><b>Inverz.</b> Napiši y = f(x), izrazi x (oduzmi D, podijeli sa A, primijeni sin/cos/tg/ctg, izrazi x), pa zamijeni x i y.</li>
       <li><b>Domen i kodomen inverza.</b> D(f⁻¹) = K(f) i K(f⁻¹) = D(f).</li>
-      <li><b>Skica f⁻¹.</b> Odraz grafika f preko prave y = x. Ucrtaj samo luk iznad D(f⁻¹).</li>
+      <li><b>Skica f⁻¹.</b> Transformacijama osnovne funkcije (tabela ispod) ili odrazom grafika f preko prave y = x. Oba načina daju isti grafik.</li>
     </ol>
+    <p>Za sin, cos, tg i ctg postupak je isti, samo je prvi korak <b>suženje</b>: argument Bx + C mora biti na luku iz tabele iznad, pa se domen dobija iz te dvostruke nejednakosti. U koraku 4 primjenjuje se arcsin, arccos, arctg ili arcctg, a to smije baš zato što je argument na luku.</p>
+
+    <h2>Postupak za crtanje inverza</h2>
+    <p>Ako je f(x) = A·g(Bx + C) + D, onda je f⁻¹(x) = (1/B)·G((x − D)/A) − C/B, gdje je G inverz od g. Grafik f⁻¹ crta se od osnovnog grafika G istim koracima kao f, samo zamijenjenim: šta je kod f djelovalo po y-osi, kod f⁻¹ djeluje po x-osi, i obrnuto.</p>
+    <div class="tw"><table class="rt">
+      <thead><tr><th>korak</th><th>kod f</th><th>kod f⁻¹</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>osnovni grafik g</td><td>osnovni grafik G (za G = sin, cos, tg, ctg samo luk)</td></tr>
+        <tr><td>2</td><td>B: sabijanje po x-osi |B| puta</td><td>A: razvlačenje po x-osi |A| puta, odraz preko y-ose ako je A &lt; 0</td></tr>
+        <tr><td>3</td><td>C: pomak po x-osi za −C/B</td><td>D: pomak po x-osi za D</td></tr>
+        <tr><td>4</td><td>A: razvlačenje po y-osi |A| puta</td><td>1/B: množenje vrijednosti sa 1/B, odraz preko x-ose ako je B &lt; 0</td></tr>
+        <tr><td>5</td><td>D: pomak po y-osi za D</td><td>−C/B: pomak po y-osi za −C/B</td></tr>
+      </tbody>
+    </table></div>
+    <p>Kontrola: poslije koraka 3 domen skice mora biti K(f), a na kraju kodomen mora biti D(f). Krajevi luka i asimptote se samo zamijene: tačka (a, b) sa grafika f postaje (b, a), a horizontalna asimptota postaje vertikalna.</p>
+
 
     <h2>Transformacije grafika</h2>
     <div class="tw"><table class="rt">
@@ -341,14 +375,14 @@ sup{font-size:.7em;line-height:0;vertical-align:.45em}
     </ul>
 
     <h2>Šta rješavač radi, a šta ne</h2>
-    <p>Rješava funkcije oblika A·g(Bx + C) + D, gdje je g jedna od funkcija arcsin, arccos, arctg i arcctg. A, B i C su racionalni brojevi (cijeli, razlomci ili decimale), a D može sadržati i π. Za sve drugo (sin, ln, x van arcusa, x², zbir dvije arcus funkcije, π uz x) prikazuje obavještenje sa razlogom i ne izmišlja rješenje. Svaki inverz se automatski provjerava na stotinama tačaka prije prikaza. Ako provjera padne, rezultat se ne prikazuje.</p>
+    <p>Rješava funkcije oblika A·g(Bx + C) + D, gdje je g jedna od funkcija sin, cos, tg, ctg, arcsin, arccos, arctg i arcctg. A i B su racionalni brojevi (cijeli, razlomci ili decimale), a C i D mogu sadržati i π. Za sin, cos, tg i ctg uzima se standardni luk; zadavanje drugog intervala još nije podržano i javlja se obavještenjem. Za sve drugo (ln, x van funkcije, x², zbir dvije funkcije, π uz x) prikazuje obavještenje sa razlogom i ne izmišlja rješenje. Svaki inverz se automatski provjerava na stotinama tačaka prije prikaza. Ako provjera padne, rezultat se ne prikazuje.</p>
   </section>
   </main>
   <p class="foot">Postupak prati uobičajen zapis sa vježbi: tg, ctg, arctg, arcctg i kodomen arcctg (0, π). Ako se vaša skripta razlikuje, drži se skripte. Rješavač služi da provjeriš i razumiješ svoj postupak, a ne da ga zamijeni.</p>
 </div>
 <div id="toasts" aria-live="polite"></div>
 <script>
-/* Matematički motor: f(x) = A·g(Bx + C) + D, g ∈ {arcsin, arccos, arctg, arcctg}.
+/* Matematički motor: f(x) = A·g(Bx + C) + D, g ∈ {arcsin, arccos, arctg, arcctg, sin, cos, tg, ctg}.
    Sve se računa tačno (razlomci i višekratnici π); brojevi s pomičnim zarezom
    služe samo za crtanje i za provjeru. */
 var Arcus = (function () {
@@ -447,35 +481,75 @@ var Arcus = (function () {
     return new S(Z, r[0], r[1]);
   }
 
-  /* ---------- Osnovne funkcije ---------- */
-  var BASE = {
-    arcsin: { name: 'arcsin', h: 'sin', bounded: true, inc: true,
-      dom: [pr(-1), pr(1), true, true], rng: [pp(-1, 2), pp(1, 2), true, true],
-      at: { '-1': pp(-1, 2), '0': pr(0), '1': pp(1, 2), '-1/2': pp(-1, 6), '1/2': pp(1, 6) },
-      num: Math.asin, hnum: Math.sin,
-      restr: '[' + MINUS + 'π/2, π/2]' },
-    arccos: { name: 'arccos', h: 'cos', bounded: true, inc: false,
-      dom: [pr(-1), pr(1), true, true], rng: [pr(0), pp(1), true, true],
-      at: { '-1': pp(1), '0': pp(1, 2), '1': pr(0), '-1/2': pp(2, 3), '1/2': pp(1, 3) },
-      num: Math.acos, hnum: Math.cos,
-      restr: '[0, π]' },
-    arctg: { name: 'arctg', h: 'tg', bounded: false, inc: true,
-      dom: [null, null, false, false], rng: [pp(-1, 2), pp(1, 2), false, false],
-      at: { '-1': pp(-1, 4), '0': pr(0), '1': pp(1, 4) },
-      num: Math.atan, hnum: Math.tan,
-      restr: '(' + MINUS + 'π/2, π/2)' },
-    arcctg: { name: 'arcctg', h: 'ctg', bounded: false, inc: false,
-      dom: [null, null, false, false], rng: [pr(0), pp(1), false, false],
-      at: { '-1': pp(3, 4), '0': pp(1, 2), '1': pp(1, 4) },
-      num: function (u) { return PI / 2 - Math.atan(u); }, hnum: function (t) { return Math.cos(t) / Math.sin(t); },
-      restr: '(0, π)' }
+  /* ---------- Osnovne funkcije (arcus i trigonometrijske) ----------
+     U: skup argumenata u (za trigonometrijske: suženje na kojem su injektivne)
+     R: skup vrijednosti; inv: inverzna funkcija; keyU: tačke za skicu */
+  var FUN = {
+    arcsin: { kind: 'arc', inv: 'sin', inc: true, U: [pr(-1), pr(1), true, true], R: [pp(-1, 2), pp(1, 2), true, true],
+      keyU: [pr(-1), pr(0), pr(1)], asymU: [], asymY: [], num: Math.asin },
+    arccos: { kind: 'arc', inv: 'cos', inc: false, U: [pr(-1), pr(1), true, true], R: [pr(0), pp(1), true, true],
+      keyU: [pr(-1), pr(0), pr(1)], asymU: [], asymY: [], num: Math.acos },
+    arctg: { kind: 'arc', inv: 'tg', inc: true, U: [null, null, false, false], R: [pp(-1, 2), pp(1, 2), false, false],
+      keyU: [pr(-1), pr(0), pr(1)], asymU: [], asymY: [pp(-1, 2), pp(1, 2)], num: Math.atan },
+    arcctg: { kind: 'arc', inv: 'ctg', inc: false, U: [null, null, false, false], R: [pr(0), pp(1), false, false],
+      keyU: [pr(-1), pr(0), pr(1)], asymU: [], asymY: [pr(0), pp(1)], num: function (u) { return PI / 2 - Math.atan(u); } },
+    sin: { kind: 'trig', inv: 'arcsin', inc: true, U: [pp(-1, 2), pp(1, 2), true, true], R: [pr(-1), pr(1), true, true],
+      keyU: [pp(-1, 2), pr(0), pp(1, 2)], asymU: [], asymY: [], num: Math.sin,
+      why: 'sin je periodična (sin 0 = sin π = 0), pa na cijelom ℝ nije injektivna i nema inverz. Na [−π/2, π/2] je strogo rastuća i prima sve vrijednosti iz [−1, 1]. To je standardno suženje, isti interval koji je kodomen od arcsin.' },
+    cos: { kind: 'trig', inv: 'arccos', inc: false, U: [pr(0), pp(1), true, true], R: [pr(-1), pr(1), true, true],
+      keyU: [pr(0), pp(1, 2), pp(1)], asymU: [], asymY: [], num: Math.cos,
+      why: 'cos je periodična i parna (cos(−t) = cos t), pa na cijelom ℝ nije injektivna. Na [0, π] je strogo opadajuća i prima sve vrijednosti iz [−1, 1]. To je standardno suženje, isti interval koji je kodomen od arccos.' },
+    tg: { kind: 'trig', inv: 'arctg', inc: true, U: [pp(-1, 2), pp(1, 2), false, false], R: [null, null, false, false],
+      keyU: [pp(-1, 4), pr(0), pp(1, 4)], asymU: [pp(-1, 2), pp(1, 2)], asymY: [], num: Math.tan,
+      why: 'tg je periodična sa periodom π, pa na cijelom domenu nije injektivna. Na (−π/2, π/2) je strogo rastuća i prima sve realne vrijednosti. Krajevi su otvoreni jer tg u ±π/2 nije definisan (vertikalne asimptote).' },
+    ctg: { kind: 'trig', inv: 'arcctg', inc: false, U: [pr(0), pp(1), false, false], R: [null, null, false, false],
+      keyU: [pp(1, 4), pp(1, 2), pp(3, 4)], asymU: [pr(0), pp(1)], asymY: [], num: function (t) { return Math.cos(t) / Math.sin(t); },
+      why: 'ctg je periodična sa periodom π, pa na cijelom domenu nije injektivna. Na (0, π) je strogo opadajuća i prima sve realne vrijednosti. Krajevi su otvoreni jer ctg u 0 i π nije definisan (vertikalne asimptote).' }
   };
-
   /* krajevi domena: zaokruživanje može dati 1.0000000000000002, pa ga vraćamo na ±1 */
-  Object.keys(BASE).forEach(function (k) {
-    var b = BASE[k], raw = b.num;
-    if (b.bounded) b.num = function (u) { if (u > 1 && u - 1 < 1e-9) u = 1; else if (u < -1 && -1 - u < 1e-9) u = -1; return raw(u); };
+  ['arcsin', 'arccos'].forEach(function (k) {
+    var raw = FUN[k].num;
+    FUN[k].num = function (u) { if (u > 1 && u - 1 < 1e-9) u = 1; else if (u < -1 && -1 - u < 1e-9) u = -1; return raw(u); };
   });
+  var BASE = FUN;
+  var AS = { '-1': pp(-1, 2), '-1/2': pp(-1, 6), '0': pr(0), '1/2': pp(1, 6), '1': pp(1, 2) };
+  var AT = { '-1': pp(-1, 4), '0': pr(0), '1': pp(1, 4) };
+  /* tačna vrijednost g(u): P, S ili null */
+  function exact(g, u) {
+    if (FUN[g].kind === 'arc') {
+      if (!u.isRat()) return null;
+      var key = u.a.n + (u.a.d === 1 ? '' : '/' + u.a.d);
+      if (g === 'arcsin') return AS[key] || null;
+      if (g === 'arccos') return AS[key] ? pp(1, 2).sub(AS[key]) : null;
+      if (g === 'arctg') return AT[key] || null;
+      return AT[key] ? pp(1, 2).sub(AT[key]) : null;
+    }
+    var s = trigExact(g, u);
+    if (!s) return null;
+    return s.s.isZero() ? new P(s.r, Z) : s;
+  }
+  function isP(v) { return v instanceof P; }
+  function axb(v, A, D) { // A·v + D
+    if (!v) return null;
+    if (isP(v)) return v.scale(A).add(D);
+    if (!D.isRat()) return null;
+    return new S(v.r.mul(A).add(D.a), v.s.mul(A), v.k);
+  }
+  function xOfU(u, B, C) { // (u − C)/B
+    if (!u) return null;
+    if (isP(u)) return u.sub(C).scale(ONE.div(B));
+    if (!C.isRat()) return null;
+    return new S(u.r.sub(C.a).div(B), u.s.div(B), u.k);
+  }
+
+  /* ---------- Formule ---------- */
+  function linHtml(B, C, v) { return hcoef(B) + (v || X) + hpTail(C); }
+  function linPlain(B, C) { return fcoef(B) + 'x' + fpTail(C); }
+  function fHtml(g, A, B, C, D, v) { return hcoef(A) + fnName(g) + '(' + linHtml(B, C, v) + ')' + hpTail(D); }
+  function fPlain(g, A, B, C, D) { return fcoef(A) + g + '(' + linPlain(B, C) + ')' + fpTail(D); }
+  /* k·G(inner) + c0 */
+  function finvHtml(G, A, k, c0, D, v) { return hcoef(k) + fnName(G) + '(' + innerHtmlSafe(A, D, v) + ')' + hpTail(c0); }
+  function finvPlain(G, A, k, c0, D, v) { return fcoef(k) + G + '(' + innerPlainSafe(A, D, v) + ')' + fpTail(c0); }
 
   /* ---------- Formatiranje: običan tekst ---------- */
   function qMag(c, unit) { // |c|·unit, bez znaka
@@ -575,24 +649,6 @@ var Arcus = (function () {
   function fnName(n) { return '<span class="fn">' + n + '</span>'; }
 
   /* Bx + C */
-  function linHtml(B, C, v) {
-    v = v || X;
-    var s = hcoef(B) + v;
-    if (!C.isZero()) s += (C.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, '');
-    return s;
-  }
-  function linPlain(B, C) {
-    var s = fcoef(B) + 'x';
-    if (!C.isZero()) s += (C.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(C, '');
-    return s;
-  }
-  /* A·g(Bx + C) + D */
-  function fHtml(g, A, B, C, D, v) {
-    return hcoef(A) + fnName(g) + '(' + linHtml(B, C, v) + ')' + hpTail(D);
-  }
-  function fPlain(g, A, B, C, D) {
-    return fcoef(A) + g + '(' + linPlain(B, C) + ')' + fpTail(D);
-  }
   /* (v − D)/A, pojednostavljeno tako da je imenilac pozitivan */
   function innerHtml(A, D, v) {
     var num;
@@ -630,21 +686,6 @@ var Arcus = (function () {
     if (den.n === 1) return den.d + '(' + num + ')';
     return den.d + '(' + num + ')/' + den.n;
   }
-  /* (1/B)·h(inner) − C/B */
-  function finvHtml(h, A, B, C, D, v, kk) {
-    var k = kk || ONE.div(B), c0 = C.neg().div(B);
-    var body = fnName(h) + '(' + innerHtmlSafe(A, D, v) + ')';
-    var s = hcoef(k) + body;
-    if (!c0.isZero()) s += (c0.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(c0, '');
-    return s;
-  }
-  function finvPlain(h, A, B, C, D, v, kk) {
-    var k = kk || ONE.div(B), c0 = C.neg().div(B);
-    var s = fcoef(k) + h + '(' + innerPlainSafe(A, D, v) + ')';
-    if (!c0.isZero()) s += (c0.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(c0, '');
-    return s;
-  }
-
   /* ---------- Intervali ---------- */
   function ivHtml(lo, hi, lc, hc) {
     if (!lo && !hi) return 'ℝ';
@@ -663,7 +704,6 @@ var Arcus = (function () {
     var sum = a.add(b);
     var fmt = function (c) { return c.isZero() ? '0' : (c.sign() < 0 ? MINUS : '') + qMag(c, unit); };
     var bstr = b.sign() < 0 ? ' ' + MINUS + ' ' + qMag(b, unit) : ' + ' + qMag(b, unit);
-    if (a.isZero()) return '';
     if (a.d === 1 && b.d === 1) return fmt(a) + bstr + ' = ' + fmt(sum);
     var L = a.d * b.d / gcd(a.d, b.d);
     var an = a.n * (L / a.d), bn = b.n * (L / b.d);
@@ -708,22 +748,29 @@ var Arcus = (function () {
     return 'Računamo: ' + segs.join('; ') + (p.nTerms() > 1 ? ', pa je rezultat ' + fp(res) : '') + '.';
   }
 
+  function explainDiv(p, B, res) {
+    var t = pTerms(p), ps = fp(p);
+    if (t.length > 1 || (t.length === 1 && t[0].c.sign() < 0)) ps = '(' + ps + ')';
+    var bs = B.sign() < 0 || B.d !== 1 ? '(' + fq(B) + ')' : fq(B);
+    return ps + ' : ' + bs + ' = ' + fp(res);
+  }
   /* ---------- Parser ---------- */
   var FUNCS = [
     ['arccotg', 'arcctg'], ['arcctan', 'arcctg'], ['arcctg', 'arcctg'], ['arccot', 'arcctg'], ['acot', 'arcctg'],
     ['arcsin', 'arcsin'], ['asin', 'arcsin'], ['arccos', 'arccos'], ['acos', 'arccos'],
     ['arctan', 'arctg'], ['arctg', 'arctg'], ['atan', 'arctg'],
-    ['sqrt', '#sqrt'], ['cotg', '#ctg'], ['ctg', '#ctg'], ['cot', '#ctg'], ['tan', '#tg'], ['tg', '#tg'],
-    ['sin', '#sin'], ['cos', '#cos'], ['exp', '#exp'], ['ln', '#ln'], ['log', '#log'],
+    ['sqrt', '#sqrt'], ['cotg', 'ctg'], ['ctg', 'ctg'], ['cot', 'ctg'], ['tan', 'tg'], ['tg', 'tg'],
+    ['sin', 'sin'], ['cos', 'cos'], ['exp', '#exp'], ['ln', '#ln'], ['log', '#log'],
     ['pi', 'π']
   ];
-  var ALIAS_NOTE = { arctan: 'arctg', atan: 'arctg', arccot: 'arcctg', arccotg: 'arcctg', arcctan: 'arcctg', acot: 'arcctg', asin: 'arcsin', acos: 'arccos' };
+  var ALIAS_NOTE = { arctan: 'arctg', atan: 'arctg', arccot: 'arcctg', arccotg: 'arcctg', arcctan: 'arcctg', acot: 'arcctg', asin: 'arcsin', acos: 'arccos', tan: 'tg', cot: 'ctg', cotg: 'ctg' };
 
   function tokenize(src) {
     var s = src.replace(/[−–—]/g, '-').replace(/[·×∙⋅]/g, '*').replace(/÷/g, '/').replace(/,/g, '.').replace(/\s+/g, ' ').trim();
     s = s.replace(/^\s*(f\s*\(\s*x\s*\)|y)\s*=\s*/i, '');
     var toks = [], i = 0, notes = [];
-    if (!s) throw new MathErr('Prazan unos', 'Upiši funkciju, npr. 2arcsin(3x − 1) + π/4.');
+    if (!s) throw new MathErr('Prazan unos', 'Upiši funkciju, npr. 2arcsin(3x − 1) + π/4 ili 2sin(2x − π/3) + 1.');
+    if (/[∈:;]|\bx\s*[<>≤≥]/.test(s)) throw new MathErr('Interval nije podržan', 'Zadavanje domena ili intervala (npr. x ∈ [0, π]) još nije podržano. Za sin, cos, tg i ctg rješavač sam uzima standardno suženje: argument u [−π/2, π/2] za sin, [0, π] za cos, (−π/2, π/2) za tg i (0, π) za ctg. Upiši samo funkciju.');
     while (i < s.length) {
       var ch = s[i];
       if (ch === ' ') { i++; continue; }
@@ -750,9 +797,9 @@ var Arcus = (function () {
           i += found[0].length; continue;
         }
         if (rest[0] === 'x') { toks.push({ t: 'x' }); i++; continue; }
-        if (rest[0] === 'e') throw new MathErr('Broj e nije podržan', 'Rješavač za sada radi samo sa arcus funkcijama oblika A·g(Bx + C) + D. Broj e i eksponencijalna funkcija nisu podržani.');
+        if (rest[0] === 'e') throw new MathErr('Broj e nije podržan', 'Rješavač radi sa funkcijama oblika A·g(Bx + C) + D, gdje je g arcus ili trigonometrijska funkcija. Broj e i eksponencijalna funkcija nisu podržani.');
         var word = /^[a-z]+/.exec(rest)[0];
-        throw new MathErr('Nepoznat simbol', '"' + word + '" nije prepoznat. Dozvoljeno: x, π (ili pi), arcsin, arccos, arctg, arcctg, brojevi, + − · / i zagrade.');
+        throw new MathErr('Nepoznat simbol', '"' + word + '" nije prepoznat. Dozvoljeno: x, π (ili pi), sin, cos, tg, ctg, arcsin, arccos, arctg, arcctg, brojevi, + − · / i zagrade.');
       }
       if ('+-*/()^'.indexOf(ch) >= 0) { toks.push({ t: ch }); i++; continue; }
       if (ch === '[' || ch === '{') { toks.push({ t: '(' }); i++; continue; }
@@ -769,7 +816,7 @@ var Arcus = (function () {
   function lNeg(u) { return new L(u.c.neg(), u.x.neg(), u.terms.map(function (t) { return { g: t.g, B: t.B, C: t.C, k: t.k.neg() }; })); }
   function lScale(u, c) { // c je P
     if (!c.isRat()) {
-      if (!u.isConst()) throw new MathErr('π kao koeficijent', 'π se množi sa x ili sa arcus funkcijom. Podržani su samo racionalni koeficijenti A i B (npr. 2, −1/2), a π smije biti samo u slobodnom članu D.');
+      if (!u.isConst()) throw new MathErr('π kao koeficijent', 'π se množi sa x ili sa funkcijom. Podržani su samo racionalni koeficijenti A i B (npr. 2, −1/2), a π smije biti samo u slobodnim članovima C i D, npr. sin(2x − π/3) + π.');
       if (!u.c.isRat()) throw new MathErr('π² nije podržan', 'U izrazu se π množi sa π. Takav slobodan član nije podržan.');
       return new L(c.scale(u.c.a), Z, []);
     }
@@ -819,7 +866,7 @@ var Arcus = (function () {
     }
     function power() {
       var b = primary();
-      if (peek() && peek().t === '^') throw new MathErr('Stepen nije podržan', 'Znak ^ (stepen) nije podržan. Argument arcus funkcije mora biti linearan: Bx + C. Npr. arcsin(x²) nije injektivna, pa nema inverz na cijelom domenu.');
+      if (peek() && peek().t === '^') throw new MathErr('Stepen nije podržan', 'Znak ^ (stepen) nije podržan. Argument funkcije mora biti linearan: Bx + C. Npr. arcsin(x²) nije injektivna, pa nema inverz na cijelom domenu.');
       return b;
     }
     function funcArg(name) {
@@ -853,21 +900,20 @@ var Arcus = (function () {
       }
       if (t.t === 'fn') {
         if (t.v[0] === '#') {
-          var nm = { '#sin': 'sin', '#cos': 'cos', '#tg': 'tg', '#ctg': 'ctg', '#ln': 'ln', '#log': 'log', '#exp': 'eksponencijalna funkcija', '#sqrt': 'korijen' }[t.v];
-          throw new MathErr('Funkcija još nije podržana', nm + ' nije podržana. Rješavač za sada radi samo sa arcus funkcijama oblika A·g(Bx + C) + D, gdje je g arcsin, arccos, arctg ili arcctg.');
+          var nm = { '#ln': 'ln', '#log': 'log', '#exp': 'eksponencijalna funkcija', '#sqrt': 'korijen' }[t.v];
+          throw new MathErr('Funkcija još nije podržana', nm + ' nije podržana. Rješavač radi sa funkcijama oblika A·g(Bx + C) + D, gdje je g sin, cos, tg, ctg, arcsin, arccos, arctg ili arcctg.');
         }
         var a = funcArg(t.v);
-        if (a.terms.length) throw new MathErr('Arcus u arcusu', 'U argumentu arcus funkcije nalazi se druga arcus funkcija. Podržan je samo linearan argument Bx + C.');
-        if (!a.c.isRat()) throw new MathErr('π u argumentu', 'Argument arcus funkcije sadrži π. Podržan je samo argument Bx + C sa racionalnim B i C.');
+        if (a.terms.length) throw new MathErr('Funkcija u funkciji', 'U argumentu od ' + t.v + ' nalazi se druga funkcija (npr. sin(arcsin x)). Podržan je samo linearan argument Bx + C.');
         if (a.x.isZero()) throw new MathErr('Argument bez x', 'Argument od ' + t.v + ' ne sadrži x, pa je ' + t.v + '(' + fp(a.c) + ') samo konstanta. Podržan je argument Bx + C sa B ≠ 0.');
-        return new L(null, null, [{ g: t.v, B: a.x, C: a.c.a, k: ONE }]);
+        return new L(null, null, [{ g: t.v, B: a.x, C: a.c, k: ONE }]);
       }
       if (t.t === ')') throw new MathErr('Višak zagrade', 'Zatvorena zagrada bez otvorene.');
       throw new MathErr('Neočekivan znak', 'Znak "' + t.t + '" je na pogrešnom mjestu.');
     }
     var res = expr();
     if (pos < toks.length) throw new MathErr('Višak u izrazu', 'Dio izraza poslije pozicije ' + pos + ' nije razumljiv. Provjeri zagrade i znakove.');
-    // spoji iste arcus članove
+    // spoji iste članove
     var merged = [];
     res.terms.forEach(function (t) {
       var m = merged.filter(function (o) { return o.g === t.g && o.B.eq(t.B) && o.C.eq(t.C); })[0];
@@ -875,15 +921,14 @@ var Arcus = (function () {
     });
     merged = merged.filter(function (t) { return !t.k.isZero(); });
     if (merged.length === 0) {
-      if (!res.x.isZero()) throw new MathErr('Nema arcus funkcije', 'Ovo je linearna funkcija. Rješavač je napravljen za arcus funkcije oblika A·g(Bx + C) + D.');
-      throw new MathErr('Konstantna funkcija', 'Funkcija je konstantna (nema x ili se arcus članovi poništavaju). Konstantna funkcija nije injektivna, pa nema inverz.');
+      if (!res.x.isZero()) throw new MathErr('Nema funkcije g', 'Ovo je linearna funkcija. Rješavač je napravljen za funkcije oblika A·g(Bx + C) + D, gdje je g trigonometrijska ili arcus funkcija.');
+      throw new MathErr('Konstantna funkcija', 'Funkcija je konstantna (nema x ili se članovi poništavaju). Konstantna funkcija nije injektivna, pa nema inverz.');
     }
-    if (merged.length > 1) throw new MathErr('Više arcus funkcija', 'Izraz sadrži zbir više različitih arcus funkcija. Inverz takve funkcije se u opštem slučaju ne može dobiti formulom, pa je rješavač ne podržava.');
-    if (!res.x.isZero()) throw new MathErr('x van arcus funkcije', 'x se pojavljuje i van arcus funkcije (npr. x + arctg x). Takva funkcija nema inverz koji se može napisati formulom.');
+    if (merged.length > 1) throw new MathErr('Više funkcija u zbiru', 'Izraz sadrži zbir više različitih funkcija (npr. sin x + cos x ili arcsin x + arctg x). Inverz takve funkcije se u opštem slučaju ne može dobiti ovim postupkom, pa je rješavač ne podržava.');
+    if (!res.x.isZero()) throw new MathErr('x van funkcije', 'x se pojavljuje i van funkcije g (npr. x + sin x ili x + arctg x). Takva funkcija nema inverz koji se može napisati formulom.');
     var tt = merged[0];
     return { g: tt.g, A: tt.k, B: tt.B, C: tt.C, D: res.c, notes: notes };
   }
-
   /* ---------- Rješavanje ---------- */
   function numP(p) { return { v: p.val(), plain: fp(p), html: hp(p), exact: true }; }
   function numS(s) { return { v: s.val(), plain: fs(s), html: hs(s), exact: true }; }
@@ -892,100 +937,155 @@ var Arcus = (function () {
     var s = ('≈ ' + String(r).replace('-', MINUS)).replace('.', ',');
     return { v: v, plain: s, html: s, exact: false };
   }
+  function numAny(v, fallback) { return v ? (isP(v) ? numP(v) : numS(v)) : numApprox(fallback); }
+  function inIv(v, lo, hi, lc, hc) { // lo, hi su brojevi ili null
+    var e = 1e-12;
+    if (lo !== null && (lc ? v < lo - e : v <= lo + e)) return false;
+    if (hi !== null && (hc ? v > hi + e : v >= hi - e)) return false;
+    return true;
+  }
+  function ivVal(iv) { return [iv[0] ? iv[0].val() : null, iv[1] ? iv[1].val() : null, iv[2], iv[3]]; }
+  function ivPl(iv) { return ivPlain(iv[0], iv[1], iv[2], iv[3]); }
+  var RESTR_TXT = { sin: '[' + MINUS + 'π/2, π/2]', cos: '[0, π]', tg: '(' + MINUS + 'π/2, π/2)', ctg: '(0, π)' };
+  var PAIR_EX = { arcsin: 'arcsin(sin π) = arcsin 0 = 0 ≠ π', arccos: 'arccos(cos 2π) = arccos 1 = 0 ≠ 2π', arctg: 'arctg(tg π) = arctg 0 = 0 ≠ π', arcctg: 'arcctg(ctg 3π/2) = arcctg 0 = π/2 ≠ 3π/2' };
+  var ODD = { sin: 1, tg: 1, ctg: 1, arcsin: 1, arctg: 1 };
+
+  /* Koraci skiciranja. Za f: x ↦ a·g(b·x + c) + d; za f⁻¹: x ↦ k·G((x − q)/p) + m */
+  function stepF(gd, b, c, a, d) {
+    var dom = null;
+    if (gd.U[0]) {
+      var x1 = (gd.U[0].val() - c) / b, x2 = (gd.U[1].val() - c) / b;
+      dom = [Math.min(x1, x2), Math.max(x1, x2)];
+    }
+    var xr = dom || [Math.min((-6 - c) / b, (6 - c) / b), Math.max((-6 - c) / b, (6 - c) / b)];
+    return {
+      fn: function (x) { return a * gd.num(b * x + c) + d; },
+      dom: dom, closed: gd.U[2], xr: xr,
+      vasym: gd.asymU.map(function (u) { return (u.val() - c) / b; }),
+      hasym: gd.asymY.map(function (y) { return a * y.val() + d; }),
+      marks: gd.keyU.map(function (u) { return [(u.val() - c) / b, a * gd.num(u.val()) + d]; })
+    };
+  }
+  function stepI(Gd, p, q, k, m) {
+    var dom = null;
+    if (Gd.U[0]) {
+      var x1 = p * Gd.U[0].val() + q, x2 = p * Gd.U[1].val() + q;
+      dom = [Math.min(x1, x2), Math.max(x1, x2)];
+    }
+    var xr = dom || [Math.min(-6 * p + q, 6 * p + q), Math.max(-6 * p + q, 6 * p + q)];
+    return {
+      fn: function (x) { return k * Gd.num((x - q) / p) + m; },
+      dom: dom, closed: Gd.U[2], xr: xr,
+      vasym: Gd.asymU.map(function (t) { return p * t.val() + q; }),
+      hasym: Gd.asymY.map(function (y) { return k * y.val() + m; }),
+      marks: Gd.keyU.map(function (t) { return [p * t.val() + q, k * Gd.num(t.val()) + m]; })
+    };
+  }
+  function mergeStep(o, st) { for (var key in st) o[key] = st[key]; return o; }
 
   function solve(prob) {
     var g = prob.g, A = prob.A, B = prob.B, C = prob.C, D = prob.D;
-    var bs = BASE[g];
-    if (!bs) throw new MathErr('Nepoznata funkcija', 'Funkcija ' + g + ' nije podržana.');
+    var gd = FUN[g];
+    if (!gd) throw new MathErr('Nepoznata funkcija', 'Funkcija ' + g + ' nije podržana.');
     if (A.isZero()) throw new MathErr('A = 0', 'Za A = 0 funkcija je konstantna, nije injektivna i nema inverz.');
     if (B.isZero()) throw new MathErr('B = 0', 'Za B = 0 argument ne zavisi od x, funkcija je konstantna i nema inverz.');
-    var h = bs.h;
-    var fnum = function (x) { return A.val() * bs.num(B.val() * x + C.val()) + D.val(); };
-    var hnum = bs.hnum;
-    var finvnum = function (x) { return (hnum((x - D.val()) / A.val()) - C.val()) / B.val(); };
-    var uH = linHtml(B, C);
+    var G = gd.inv, Gd = FUN[G], trig = gd.kind === 'trig';
+    var Av = A.val(), Bv = B.val(), Cv = C.val(), Dv = D.val();
+    var fnum = function (x) { return Av * gd.num(Bv * x + Cv) + Dv; };
+    var finvnum = function (x) { return (Gd.num((x - Dv) / Av) - Cv) / Bv; };
+    var uH = linHtml(B, C), uP = linPlain(B, C);
     var gu = fnName(g) + '(' + uH + ')';
     var Agu = hcoef(A) + gu;
     var fH = fHtml(g, A, B, C, D);
-    var notes = [];
-    var assumptions = [];
-    assumptions.push('Uglovi su u radijanima.');
-    if (g === 'arcctg') assumptions.push('Kodomen arcctg je (0, π), kao u većini udžbenika kod nas. Neke knjige koriste drugi dogovor; ako vaša skripta drugačije definiše arcctg, rezultat za kodomen se mijenja.');
-    if (h === 'tg' || h === 'ctg') assumptions.push('Oznake: tg = tan, ctg = cot, arctg = arctan, arcctg = arccot.');
+    var assumptions = ['Uglovi su u radijanima.'];
+    if (trig) assumptions.push(g + ' nije injektivna na cijelom domenu, pa se uzima standardno suženje: argument ' + uP + ' ∈ ' + RESTR_TXT[g] + '. Ako zadatak zadaje drugi interval, domen, kodomen i inverz se mijenjaju.');
+    if (g === 'arcctg' || G === 'arcctg') assumptions.push('Kodomen arcctg je (0, π), kao u većini udžbenika kod nas. Ako vaša skripta drugačije definiše arcctg, rezultat se mijenja.');
+    if (g === 'tg' || g === 'ctg' || G === 'tg' || G === 'ctg') assumptions.push('Oznake: tg = tan, ctg = cot, arctg = arctan, arcctg = arccot.');
 
     /* 1. Domen */
-    var dom, domLines = [];
-    var mid = function (b, c) { return linHtml(b, c); };
-    if (bs.bounded) {
-      domLines.push({ math: MINUS + '1 ≤ ' + uH + ' ≤ 1', rule: 'Uslov: argument od ' + g + ' mora biti u [' + MINUS + '1, 1].',
-        why: g + ' je inverz funkcije ' + h + ' suženog na ' + bs.restr + '. Funkcija ' + h + ' daje samo vrijednosti iz [' + MINUS + '1, 1], pa ' + g + ' može da "primi" samo te brojeve. Npr. ' + g + '(2) ne postoji, jer nijedan ugao nema ' + h + ' jednak 2.' });
-      var lo = q(-1), hi = q(1);
+    var domLines = [], dom;
+    var U = gd.U;
+    if (!U[0]) {
+      domLines.push({ math: uH + ' ∈ ℝ', rule: g + ' je definisan za svaki realan broj.',
+        why: G + ' na intervalu ' + ivPl(Gd.U) + ' poprima sve realne vrijednosti (grafik ide od ' + MINUS + '∞ do +∞ između asimptota). Zato njen inverz ' + g + ' prima bilo koji realan broj, pa nema uslova na x.' });
+      dom = [null, null, false, false];
+    } else {
+      var lc = U[2], hc = U[3];
+      if (trig) domLines.push({ math: hp(U[0]) + le(lc) + uH + le(hc) + hp(U[1]), rule: 'Suženje: argument od ' + g + ' biramo u ' + RESTR_TXT[g] + ', jer je tu ' + g + ' strogo ' + (gd.inc ? 'rastuća' : 'opadajuća') + ', pa ima inverz.', why: gd.why });
+      else domLines.push({ math: MINUS + '1 ≤ ' + uH + ' ≤ 1', rule: 'Uslov: argument od ' + g + ' mora biti u [' + MINUS + '1, 1].',
+        why: g + ' je inverz funkcije ' + G + ' suženog na ' + ivPl(gd.R) + '. Funkcija ' + G + ' daje samo vrijednosti iz [' + MINUS + '1, 1], pa ' + g + ' može da "primi" samo te brojeve. Npr. ' + g + '(2) ne postoji, jer nijedan ugao nema ' + G + ' jednak 2.' });
+      var lo = U[0], hi = U[1];
       if (!C.isZero()) {
-        var mc = C.neg();
+        var mc = C.neg(), tail = hpTail(mc);
+        domLines.push({ math: hp(lo) + tail + le(lc) + linHtml(B, new P()) + le(hc) + hp(hi) + tail,
+          rule: (C.nTerms() === 1 && C.val() < 0 ? 'Dodajemo ' + fp(mc) + ' svim stranama' : C.nTerms() === 1 ? 'Oduzimamo ' + fp(C) + ' od svih strana' : 'Oduzimamo (' + fp(C) + ') od svih strana') + ' da bi uz x ostalo samo ' + linPlain(B, new P()) + '. Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
         var lo2 = lo.add(mc), hi2 = hi.add(mc);
-        var tail = (mc.sign() < 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(mc, '');
-        domLines.push({ math: MINUS + '1' + tail + ' ≤ ' + linHtml(B, Z) + ' ≤ 1' + tail,
-          rule: (C.sign() < 0 ? 'Dodajemo ' + qMag(C, '') + ' svim stranama' : 'Oduzimamo ' + qMag(C, '') + ' od svih strana') + ' da bi uz x ostalo samo ' + linPlain(B, Z) + '. Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
-        domLines.push({ math: hq(lo2) + ' ≤ ' + linHtml(B, Z) + ' ≤ ' + hq(hi2), rule: 'Računamo: ' + explainAddQ(lo, mc, '') + ' i ' + explainAddQ(hi, mc, '') + '.' });
+        domLines.push({ math: hp(lo2) + le(lc) + linHtml(B, new P()) + le(hc) + hp(hi2), rule: explainAddAll([explainAddP(lo, mc), explainAddP(hi, mc)]) || 'Sređujemo.' });
         lo = lo2; hi = hi2;
       }
       if (!B.isOne()) {
-        var l3 = lo.div(B), h3 = hi.div(B);
-        var raw = fr(hq(lo), hq(B)) + (B.sign() > 0 ? ' ≤ ' : ' ≥ ') + X + (B.sign() > 0 ? ' ≤ ' : ' ≥ ') + fr(hq(hi), hq(B));
+        var ib = ONE.div(B), l3 = lo.scale(ib), h3 = hi.scale(ib);
+        var raw = fr(hp(lo), hq(B)) + (B.sign() > 0 ? le(lc) : ge(lc)) + X + (B.sign() > 0 ? le(hc) : ge(hc)) + fr(hp(hi), hq(B));
+        var calc = explainDiv(lo, B, l3) + '; ' + explainDiv(hi, B, h3) + '.';
         if (B.sign() > 0) {
-          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' > 0, znakovi nejednakosti ostaju isti.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + '.' : '') });
-          domLines.push({ math: hq(l3) + ' ≤ ' + X + ' ≤ ' + hq(h3), rule: 'Skraćujemo razlomke.' });
+          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' > 0, znakovi nejednakosti ostaju isti.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ib) + '.' : '') });
+          domLines.push({ math: hp(l3) + le(lc) + X + le(hc) + hp(h3), rule: 'Računamo: ' + calc });
         } else {
-          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' < 0, znakovi nejednakosti se okreću: ≤ postaje ≥.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + '.' : ''),
-            why: 'Množenje ili dijeljenje negativnim brojem obrće poredak brojeva: 2 < 3, ali ' + MINUS + '2 > ' + MINUS + '3. Zato se pri dijeljenju sa negativnim B svaki znak ≤ mijenja u ≥.' });
-          domLines.push({ math: hq(l3) + ' ≥ ' + X + ' ≥ ' + hq(h3), rule: 'Skraćujemo razlomke.' });
-          domLines.push({ math: hq(h3) + ' ≤ ' + X + ' ≤ ' + hq(l3), rule: 'Pišemo isto, ali od manjeg broja ka većem.' });
-          var tmp = l3; l3 = h3; h3 = tmp;
+          domLines.push({ math: raw, rule: 'Dijelimo sve strane sa ' + fq(B) + '. Pošto je ' + fq(B) + ' < 0, znakovi nejednakosti se okreću.' + (B.d !== 1 ? ' Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ib) + '.' : ''),
+            why: 'Množenje ili dijeljenje negativnim brojem obrće poredak brojeva: 2 < 3, ali ' + MINUS + '2 > ' + MINUS + '3. Zato se pri dijeljenju sa negativnim B svaki znak ≤ mijenja u ≥ (i < u >).' });
+          domLines.push({ math: hp(l3) + ge(lc) + X + ge(hc) + hp(h3), rule: 'Računamo: ' + calc });
+          domLines.push({ math: hp(h3) + le(hc) + X + le(lc) + hp(l3), rule: 'Pišemo isto, ali od manjeg broja ka većem. Uz kraj ide i njegova zagrada.' });
+          var t0 = l3; l3 = h3; h3 = t0; var t1 = lc; lc = hc; hc = t1;
         }
         lo = l3; hi = h3;
       }
-      dom = { lo: new P(lo, Z), hi: new P(hi, Z), lc: true, hc: true };
-    } else {
-      domLines.push({ math: uH + ' ∈ ℝ', rule: g + ' je definisan za svaki realan broj.',
-        why: h + ' na intervalu ' + bs.restr + ' poprima sve realne vrijednosti (grafik ide od ' + MINUS + '∞ do +∞ između asimptota). Zato njen inverz ' + g + ' prima bilo koji realan broj, pa nema uslova na x.' });
-      dom = { lo: null, hi: null, lc: false, hc: false };
+      dom = [lo, hi, lc, hc];
     }
-    var domH = ivHtml(dom.lo, dom.hi, dom.lc, dom.hc);
+    var domH = ivHtml(dom[0], dom[1], dom[2], dom[3]);
 
     /* 2. Kodomen */
-    var rl = bs.rng[0], rh = bs.rng[1], rlc = bs.rng[2], rhc = bs.rng[3];
-    var rngLines = [];
-    rngLines.push({ math: hp(rl) + le(rlc) + gu + le(rhc) + hp(rh), rule: 'Kodomen od ' + g + ' je ' + ivPlain(rl, rh, rlc, rhc) + '.',
-      why: (bs.bounded ? 'Kad x prolazi cijeli domen, u = ' + linPlain(B, C) + ' prolazi cijeli interval [' + MINUS + '1, 1] (linearna funkcija je neprekidna i monotona).' : 'Kad x prolazi ℝ, u = ' + linPlain(B, C) + ' prolazi sve realne brojeve.') +
-        ' Zato ' + g + '(u) poprima sve vrijednosti iz svog kodomena ' + ivPlain(rl, rh, rlc, rhc) + (bs.bounded ? '' : ', a krajeve nikad ne dostiže (asimptote)') + '.' });
-    if (!A.isOne()) {
-      var nl = rl.scale(A), nh = rh.scale(A);
-      if (A.sign() > 0) {
-        rngLines.push({ math: hp(rl.scale(A)) + le(rlc) + Agu + le(rhc) + hp(rh.scale(A)), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' > 0, znakovi ostaju. ' + [explainMul(A, rl), explainMul(A, rh)].filter(Boolean).join(' ').replace(/\. Računamo:/g, ';') });
-      } else {
-        rngLines.push({ math: hp(nl) + ge(rlc) + Agu + ge(rhc) + hp(nh), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' < 0, znakovi se okreću. ' + [explainMul(A, rl), explainMul(A, rh)].filter(Boolean).join(' ').replace(/\. Računamo:/g, ';'),
-          why: 'Negativan A obrće interval: najmanja vrijednost od ' + g + ' postaje najveća vrijednost od A·' + g + ' i obrnuto. Na grafiku je to odraz preko x-ose.' });
-        rngLines.push({ math: hp(nh) + le(rhc) + Agu + le(rlc) + hp(nl), rule: 'Pišemo od manjeg ka većem. Uz kraj ide i njegova zagrada: otvoren kraj ostaje otvoren.' });
-        var t1 = nl; nl = nh; nh = t1; var t2 = rlc; rlc = rhc; rhc = t2;
-      }
-      rl = nl; rh = nh;
-    }
-    if (!D.isZero()) {
-      var dtail = hpTail(D);
-      rngLines.push({ math: hp(rl) + dtail + le(rlc) + Agu + dtail + le(rhc) + hp(rh) + dtail, rule: (D.nTerms() === 1 && D.val() < 0 ? 'Oduzimamo ' + fp(D.neg()) + ' od svih strana.' : 'Dodajemo ' + fp(D) + ' svim stranama.') + ' Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
-      var al = rl.add(D), ah = rh.add(D);
-      rngLines.push({ math: hp(al) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(ah), rule: explainAddAll([explainAddP(rl, D), explainAddP(rh, D)]) || 'Sređujemo.' });
-      rl = al; rh = ah;
+    var rngLines = [], rng;
+    var R = gd.R;
+    if (!R[0]) {
+      rngLines.push({ math: gu + ' ∈ ℝ', rule: 'Na suženju ' + RESTR_TXT[g] + ' funkcija ' + g + ' prima sve realne vrijednosti.',
+        why: 'Kad se argument približava krajevima intervala, ' + g + ' ide u ' + MINUS + '∞ i +∞ (asimptote), a između prolazi kroz svaki realan broj.' });
+      rngLines.push({ math: '<i>f</i>(' + X + ') = ' + fH + ' ∈ ℝ', rule: 'Množenje brojem A ≠ 0 i dodavanje broja D ne mijenjaju ℝ: svaki realan broj je oblika A·t + D za neko realno t.' });
+      rng = [null, null, false, false];
     } else {
-      rngLines.push({ math: hp(rl) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(rh), rule: 'Srednji izraz je baš f(x).' });
+      var rl = R[0], rh = R[1], rlc = R[2], rhc = R[3];
+      rngLines.push({ math: hp(rl) + le(rlc) + gu + le(rhc) + hp(rh), rule: (trig ? 'Na suženju ' + RESTR_TXT[g] + ' funkcija ' + g + ' prima vrijednosti ' : 'Kodomen od ' + g + ' je ') + ivPl(R) + '.',
+        why: (gd.U[0] ? 'Kad x prolazi cijeli domen, u = ' + uP + ' prolazi cijeli interval ' + ivPl(gd.U) + ' (linearna funkcija je neprekidna i monotona).' : 'Kad x prolazi ℝ, u = ' + uP + ' prolazi sve realne brojeve.') +
+          ' Zato ' + g + '(u) poprima sve vrijednosti iz ' + ivPl(R) + (rlc ? '' : ', a krajeve nikad ne dostiže (asimptote)') + '.' });
+      if (!A.isOne()) {
+        var nl = rl.scale(A), nh = rh.scale(A);
+        var mulTxt = [explainMul(A, rl), explainMul(A, rh)].filter(Boolean).join(' ').replace(/\. Računamo:/g, ';');
+        if (A.sign() > 0) {
+          rngLines.push({ math: hp(nl) + le(rlc) + Agu + le(rhc) + hp(nh), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' > 0, znakovi ostaju. ' + mulTxt });
+        } else {
+          rngLines.push({ math: hp(nl) + ge(rlc) + Agu + ge(rhc) + hp(nh), rule: 'Množimo sve strane sa ' + fq(A) + '. Pošto je ' + fq(A) + ' < 0, znakovi se okreću. ' + mulTxt,
+            why: 'Negativan A obrće interval: najmanja vrijednost od ' + g + ' postaje najveća vrijednost od A·' + g + ' i obrnuto. Na grafiku je to odraz preko x-ose.' });
+          rngLines.push({ math: hp(nh) + le(rhc) + Agu + le(rlc) + hp(nl), rule: 'Pišemo od manjeg ka većem. Uz kraj ide i njegova zagrada: otvoren kraj ostaje otvoren.' });
+          var s1 = nl; nl = nh; nh = s1; var s2 = rlc; rlc = rhc; rhc = s2;
+        }
+        rl = nl; rh = nh;
+      }
+      if (!D.isZero()) {
+        var dt = hpTail(D);
+        rngLines.push({ math: hp(rl) + dt + le(rlc) + Agu + dt + le(rhc) + hp(rh) + dt, rule: (D.nTerms() === 1 && D.val() < 0 ? 'Oduzimamo ' + fp(D.neg()) + ' od svih strana.' : 'Dodajemo ' + fp(D) + ' svim stranama.') + ' Sabiranje i oduzimanje ne mijenjaju smjer nejednakosti.' });
+        var al = rl.add(D), ah = rh.add(D);
+        rngLines.push({ math: hp(al) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(ah), rule: explainAddAll([explainAddP(rl, D), explainAddP(rh, D)]) || 'Sređujemo.' });
+        rl = al; rh = ah;
+      } else {
+        rngLines.push({ math: hp(rl) + le(rlc) + '<i>f</i>(' + X + ')' + le(rhc) + hp(rh), rule: 'Srednji izraz je baš f(x).' });
+      }
+      rng = [rl, rh, rlc, rhc];
     }
-    var rng = { lo: rl, hi: rh, lc: rlc, hc: rhc };
-    var rngH = ivHtml(rl, rh, rlc, rhc);
+    var rngH = ivHtml(rng[0], rng[1], rng[2], rng[3]);
+    var domN = ivVal(dom), rngN = ivVal(rng);
 
     /* Monotonost */
-    var signs = (bs.inc ? 1 : -1) * A.sign() * B.sign();
-    var inc = signs > 0;
-    var monoWhy = g + ' je ' + (bs.inc ? 'rastuća' : 'opadajuća') + '. Unutrašnja funkcija ' + linPlain(B, C) + ' je ' + (B.sign() > 0 ? 'rastuća (B > 0)' : 'opadajuća (B < 0)') + '. Množenje sa A ' + (A.sign() > 0 ? 'ne mijenja smjer (A > 0)' : 'obrće smjer (A < 0)') + '. Svaka "opadajuća" karika obrne smjer, pa je f ' + (inc ? 'rastuća' : 'opadajuća') + '. Strogo monotona funkcija je injektivna (nikad ne uzme istu vrijednost dva puta), pa f⁻¹ postoji.';
+    var inc = (gd.inc ? 1 : -1) * A.sign() * B.sign() > 0;
+    var monoWhy = g + (trig ? ' je na suženju ' : ' je ') + (gd.inc ? 'rastuća' : 'opadajuća') + '. Unutrašnja funkcija ' + uP + ' je ' + (B.sign() > 0 ? 'rastuća (B > 0)' : 'opadajuća (B < 0)') + '. Množenje sa A ' + (A.sign() > 0 ? 'ne mijenja smjer (A > 0)' : 'obrće smjer (A < 0)') + '. Svaka "opadajuća" karika obrne smjer, pa je f ' + (inc ? 'rastuća' : 'opadajuća') + '. Strogo monotona funkcija je injektivna (nikad ne uzme istu vrijednost dva puta), pa f⁻¹ postoji.';
 
     /* 3. Karakteristične tačke */
     var pts = [];
@@ -993,143 +1093,151 @@ var Arcus = (function () {
       for (var i = 0; i < pts.length; i++) if (Math.abs(pts[i].x.v - x.v) < 1e-12) return;
       pts.push({ x: x, y: y, label: label, kind: kind });
     }
-    ['-1', '0', '1'].forEach(function (us) {
-      var uq = q(parseInt(us, 10));
-      var x = uq.sub(C).div(B);
-      var y = bs.at[us].scale(A).add(D);
-      addPt(numP(new P(x, Z)), numP(y), 'u = ' + fq(uq), bs.bounded && us !== '0' ? 'end' : 'mid');
+    gd.keyU.forEach(function (u, i) {
+      var endp = gd.U[2] && (i === 0 || i === gd.keyU.length - 1);
+      addPt(numP(xOfU(u, B, C)), numAny(axb(exact(g, u), A, D), fnum(xOfU(u, B, C).val())), 'u = ' + fp(u), endp ? 'end' : 'mid');
     });
-    // presjek sa y-osom: x = 0
-    var x0in = bs.bounded ? (0 >= dom.lo.val() - 1e-15 && 0 <= dom.hi.val() + 1e-15) : true;
-    var yint = null;
-    if (x0in) {
-      var key = fq(C).replace(MINUS, '-');
-      var gC = bs.at[key];
-      yint = gC ? numP(gC.scale(A).add(D)) : numApprox(fnum(0));
-      addPt(numP(pr(0)), yint, 'presjek sa y-osom', 'yint');
+    if (inIv(0, domN[0], domN[1], domN[2], domN[3])) {
+      addPt(numP(pr(0)), numAny(axb(exact(g, C), A, D), fnum(0)), 'presjek sa y-osom', 'yint');
     }
-    // presjek sa x-osom: f(x) = 0
-    var xint = null;
-    var in0 = (rl.val() < -1e-15 || (rlc && Math.abs(rl.val()) < 1e-15)) && (rh.val() > 1e-15 || (rhc && Math.abs(rh.val()) < 1e-15));
-    if (in0) {
+    if (inIv(0, rngN[0], rngN[1], rngN[2], rngN[3])) {
       var t = D.neg().scale(ONE.div(A));
-      var u0 = trigExact(h, t);
-      if (u0) xint = numS(u0.addQ(C.neg()).mulQ(ONE.div(B)));
-      else xint = numApprox((hnum(t.val()) - C.val()) / B.val());
-      addPt(xint, numP(pr(0)), 'presjek sa x-osom', 'xint');
+      var u0 = exact(G, t);
+      var xv = (Gd.num(t.val()) - Cv) / Bv;
+      addPt(numAny(xOfU(u0, B, C), xv), numP(pr(0)), 'presjek sa x-osom', 'xint');
     }
     pts.sort(function (a, b) { return a.x.v - b.x.v; });
 
-    /* Asimptote */
+    /* Asimptote (za f; kod f⁻¹ mijenjaju smjer) */
     var asym = [];
-    if (!bs.bounded) { asym.push(numP(rl)); asym.push(numP(rh)); }
+    gd.asymY.forEach(function (y) { asym.push({ dir: 'h', n: numP(y.scale(A).add(D)) }); });
+    gd.asymU.forEach(function (u) { asym.push({ dir: 'v', n: numP(xOfU(u, B, C)) }); });
 
-    /* 4. Transformacije grafika */
+    /* 4. Koraci skiciranja f */
     var steps = [];
-    var Bv = B.val(), Cv = C.val(), Av = A.val(), Dv = D.val();
-    var baseDom = bs.bounded ? [-1, 1] : null;
-    function domOf(b, c) { // domen od g(bx + c)
-      if (!baseDom) return null;
-      var a1 = (-1 - c) / b, a2 = (1 - c) / b;
-      return [Math.min(a1, a2), Math.max(a1, a2)];
-    }
-    steps.push({ title: 'Osnovna funkcija', eq: Y + ' = ' + fnName(g) + '(' + X + ')', skip: false,
-      desc: 'Polazimo od grafika ' + g + ' x. Domen ' + (bs.bounded ? '[' + MINUS + '1, 1]' : 'ℝ') + ', kodomen ' + ivPlain(bs.rng[0], bs.rng[1], bs.rng[2], bs.rng[3]) + '.',
-      why: 'Svaki složeniji grafik dobijamo od osnovnog nizom jednostavnih pomjeranja, sabijanja i odraza. Zato prvo treba znati napamet osnovni grafik (vidi "Osnovna pravila").',
-      fn: function (x) { return bs.num(x); }, dom: domOf(1, 0), u: [1, 0] });
-    var Babs = B.abs();
-    var bDesc = '';
+    var gDomTxt = gd.U[0] ? ivPl(gd.U) : 'ℝ';
+    steps.push(mergeStep({ title: 'Osnovna funkcija', eq: Y + ' = ' + fnName(g) + '(' + X + ')', skip: false,
+      desc: trig ? 'Polazimo od grafika ' + g + ' x, ali samo od luka na ' + RESTR_TXT[g] + ' (suženje). Na tom luku ' + g + ' prima vrijednosti ' + ivPl(gd.R) + '.' : 'Polazimo od grafika ' + g + ' x. Domen ' + gDomTxt + ', kodomen ' + ivPl(gd.R) + '.',
+      why: 'Svaki složeniji grafik dobijamo od osnovnog nizom jednostavnih pomjeranja, sabijanja i odraza. Zato prvo treba znati napamet osnovni grafik (vidi "Osnovna pravila").' + (trig ? ' Uzimamo samo jedan luk, jer samo na njemu funkcija ima inverz.' : '') }, stepF(gd, 1, 0, 1, 0)));
+    var Babs = B.abs(), bDesc = '';
     if (B.isOne()) bDesc = 'B = 1, pa nema sabijanja ni odraza.';
     else {
-      if (!Babs.isOne()) bDesc = (Babs.val() > 1 ? 'Grafik se sabija prema y-osi ' + fq(Babs) + ' puta (svaka x-koordinata se dijeli sa ' + fq(Babs) + ').' : 'Grafik se razvlači od y-ose ' + fq(ONE.div(Babs)) + ' puta (svaka x-koordinata se množi sa ' + fq(ONE.div(Babs)) + ').');
-      if (B.sign() < 0) bDesc += (bDesc ? ' Zatim ' : '') + (bDesc ? 'odraz' : 'Odraz') + ' preko y-ose, jer je B < 0.';
+      if (!Babs.isOne()) bDesc = Babs.val() > 1 ? 'Grafik se sabija prema y-osi ' + fq(Babs) + ' puta (svaka x-koordinata se dijeli sa ' + fq(Babs) + ').' : 'Grafik se razvlači od y-ose ' + fq(ONE.div(Babs)) + ' puta (svaka x-koordinata se množi sa ' + fq(ONE.div(Babs)) + ').';
+      if (B.sign() < 0) bDesc += bDesc ? ' Zatim odraz preko y-ose, jer je B < 0.' : 'Odraz preko y-ose, jer je B < 0.';
     }
-    steps.push({ title: 'Faktor uz x', eq: Y + ' = ' + fnName(g) + '(' + linHtml(B, Z) + ')', skip: B.isOne(), desc: bDesc,
-      why: 'Vrijednost koju je ' + g + ' imao u tački x sada se dobija u tački x/B, jer je B·(x/B) = x. Zato se svaka tačka grafika pomjeri sa x na x/B: za |B| > 1 tačke se primaknu y-osi, za |B| < 1 se odmaknu, a negativan B ih prebaci na drugu stranu y-ose.',
-      fn: function (x) { return bs.num(Bv * x); }, dom: domOf(Bv, 0), u: [Bv, 0] });
-    var shift = C.neg().div(B);
-    var sDesc;
+    steps.push(mergeStep({ title: 'Faktor uz x', eq: Y + ' = ' + fnName(g) + '(' + linHtml(B, new P()) + ')', skip: B.isOne(), desc: bDesc,
+      why: 'Vrijednost koju je ' + g + ' imao u tački x sada se dobija u tački x/B, jer je B·(x/B) = x. Zato se svaka tačka grafika pomjeri sa x na x/B: za |B| > 1 tačke se primaknu y-osi, za |B| < 1 se odmaknu, a negativan B ih prebaci na drugu stranu y-ose.' }, stepF(gd, Bv, 0, 1, 0)));
+    var shift = C.neg().scale(ONE.div(B)), sDesc;
     if (C.isZero()) sDesc = 'C = 0, pa nema pomjeranja po x-osi.';
-    else {
-      sDesc = linPlain(B, C) + ' = ' + (B.isOne() ? '' : fcoef(B)) + (B.isOne() ? '' : '(') + 'x' + (shift.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + qMag(shift, '') + (B.isOne() ? '' : ')') +
-        ', pa se grafik pomjera ' + (shift.sign() > 0 ? 'udesno' : 'ulijevo') + ' za ' + qMag(shift, '') + '.';
-    }
-    steps.push({ title: 'Pomjeranje po x-osi', eq: Y + ' = ' + fnName(g) + '(' + uH + ')', skip: C.isZero(), desc: sDesc,
-      why: 'Pomak se čita tek kad se B izvuče ispred zagrade: Bx + C = B(x + C/B). Zato je pomak ' + MINUS + 'C/B, a ne ' + MINUS + 'C. Pomak za C bi bio tačan samo kad je B = 1. Provjera: središnja tačka (u = 0) je tamo gdje je Bx + C = 0, tj. x = ' + MINUS + 'C/B' + (C.isZero() ? '' : ' = ' + fq(shift)) + '.',
-      fn: function (x) { return bs.num(Bv * x + Cv); }, dom: domOf(Bv, Cv), u: [Bv, Cv] });
+    else sDesc = uP + ' = ' + (B.isOne() ? 'x' : fcoef(B) + '(x' + fpTail(shift.neg()) + ')') + ', pa se grafik pomjera ' + (shift.val() > 0 ? 'udesno' : 'ulijevo') + ' za ' + fp(shift.val() > 0 ? shift : shift.neg()) + '.';
+    steps.push(mergeStep({ title: 'Pomjeranje po x-osi', eq: Y + ' = ' + gu, skip: C.isZero(), desc: sDesc,
+      why: 'Pomak se čita tek kad se B izvuče ispred zagrade: Bx + C = B(x + C/B). Zato je pomak ' + MINUS + 'C/B, a ne ' + MINUS + 'C. Pomak za C bi bio tačan samo kad je B = 1.' + (C.isZero() ? '' : ' Ovdje je ' + MINUS + 'C/B = ' + fp(shift) + '.') }, stepF(gd, Bv, Cv, 1, 0)));
     var Aabs = A.abs(), aDesc = '';
     if (A.isOne()) aDesc = 'A = 1, pa nema razvlačenja ni odraza po y-osi.';
     else {
-      if (!Aabs.isOne()) aDesc = (Aabs.val() > 1 ? 'Grafik se razvlači po y-osi ' + fq(Aabs) + ' puta (svaka y-koordinata se množi sa ' + fq(Aabs) + ').' : 'Grafik se sabija po y-osi (svaka y-koordinata se množi sa ' + fq(Aabs) + ').');
-      if (A.sign() < 0) aDesc += (aDesc ? ' Zatim odraz' : 'Odraz') + ' preko x-ose, jer je A < 0.';
+      if (!Aabs.isOne()) aDesc = Aabs.val() > 1 ? 'Grafik se razvlači po y-osi ' + fq(Aabs) + ' puta (svaka y-koordinata se množi sa ' + fq(Aabs) + ').' : 'Grafik se sabija po y-osi (svaka y-koordinata se množi sa ' + fq(Aabs) + ').';
+      if (A.sign() < 0) aDesc += aDesc ? ' Zatim odraz preko x-ose, jer je A < 0.' : 'Odraz preko x-ose, jer je A < 0.';
     }
-    steps.push({ title: 'Faktor ispred funkcije', eq: Y + ' = ' + Agu, skip: A.isOne(), desc: aDesc,
-      why: 'Svaka vrijednost funkcije se množi sa A, pa se svaka tačka (x, y) pomjeri u (x, A·y). Visina se mijenja, širina ostaje ista. Negativan A znači da tačke iznad x-ose prelaze ispod nje i obrnuto.',
-      fn: function (x) { return Av * bs.num(Bv * x + Cv); }, dom: domOf(Bv, Cv), u: [Bv, Cv], scaleY: Av });
-    steps.push({ title: 'Pomjeranje po y-osi', eq: Y + ' = ' + fH, skip: D.isZero(),
-      desc: D.isZero() ? 'D = 0, pa nema pomjeranja po y-osi.' : 'Grafik se pomjera ' + (D.val() > 0 ? 'naviše' : 'naniže') + ' za ' + fp(D.val() > 0 ? D : D.neg()) + '.',
-      why: 'Dodavanje broja D povećava svaku vrijednost funkcije za D, pa se cijeli grafik podigne (D > 0) ili spusti (D < 0) za |D|. Oblik se ne mijenja.',
-      fn: fnum, dom: domOf(Bv, Cv), u: [Bv, Cv], final: true });
+    steps.push(mergeStep({ title: 'Faktor ispred funkcije', eq: Y + ' = ' + Agu, skip: A.isOne(), desc: aDesc,
+      why: 'Svaka vrijednost funkcije se množi sa A, pa se svaka tačka (x, y) pomjeri u (x, A·y). Visina se mijenja, širina ostaje ista. Negativan A znači da tačke iznad x-ose prelaze ispod nje i obrnuto.' }, stepF(gd, Bv, Cv, Av, 0)));
+    steps.push(mergeStep({ title: 'Pomjeranje po y-osi', eq: Y + ' = ' + fH, skip: D.isZero(),
+      desc: D.isZero() ? 'D = 0, pa nema pomjeranja po y-osi.' : 'Grafik se pomjera ' + (Dv > 0 ? 'naviše' : 'naniže') + ' za ' + fp(Dv > 0 ? D : D.neg()) + '.',
+      why: 'Dodavanje broja D povećava svaku vrijednost funkcije za D, pa se cijeli grafik podigne (D > 0) ili spusti (D < 0) za |D|. Oblik se ne mijenja.' }, stepF(gd, Bv, Cv, Av, Dv)));
 
     /* 5. Inverz */
     var inv = [];
-    var invVar = Y;
     inv.push({ math: Y + ' = ' + fH, rule: 'Pišemo y umjesto f(x).' });
-    var cur = Agu;
-    if (!D.isZero()) {
-      inv.push({ math: Y + hpTail(D.neg()) + ' = ' + Agu, rule: (pTerms(D).length > 1 ? 'Oduzimamo ' + wrapP(D) : (D.val() > 0 ? 'Oduzimamo ' + fp(D) : 'Dodajemo ' + fp(D.neg()))) + ' na obje strane, da arcus ostane sam.' });
-    }
-    var leftAfterA = innerHtmlSafe(A, D, Y);
+    if (!D.isZero()) inv.push({ math: Y + hpTail(D.neg()) + ' = ' + Agu, rule: (D.nTerms() > 1 ? 'Oduzimamo (' + fp(D) + ')' : Dv > 0 ? 'Oduzimamo ' + fp(D) : 'Dodajemo ' + fp(D.neg())) + ' na obje strane, da ' + g + ' ostane sam.' });
+    var leftA = innerHtmlSafe(A, D, Y);
     if (!A.isOne()) {
       var rawLeft = fr(D.isZero() ? Y : Y + hpTail(D.neg()), hq(A));
       inv.push({ math: rawLeft + ' = ' + gu, rule: 'Dijelimo obje strane sa ' + fq(A) + ' (smije se jer je A ≠ 0).' });
-      if (A.sign() < 0 || A.d !== 1 || D.isZero()) {
-        if (leftAfterA !== rawLeft) inv.push({ math: leftAfterA + ' = ' + gu, rule: A.sign() < 0 ? 'Sređujemo: množimo brojilac i imenilac sa ' + MINUS + '1 da imenilac bude pozitivan.' : 'Sređujemo razlomak.' });
-      }
+      if (leftA !== rawLeft) inv.push({ math: leftA + ' = ' + gu, rule: A.sign() < 0 ? 'Sređujemo: množimo brojilac i imenilac sa ' + MINUS + '1 da imenilac bude pozitivan.' : 'Sređujemo razlomak.' });
     }
-    inv.push({ math: fnName(h) + '(' + leftAfterA + ') = ' + uH, rule: 'Primjenjujemo ' + h + ' na obje strane.',
-      why: h + '(' + g + ' u) = u važi za svako u iz domena od ' + g + (bs.bounded ? ' ([' + MINUS + '1, 1])' : ' (ℝ)') + ', pa desna strana postaje samo ' + linPlain(B, C) + '. Obrnuto ne važi uvijek: ' + g + '(' + h + ' t) = t samo za t ∈ ' + bs.restr + '. Npr. ' +
-        { arcsin: 'arcsin(sin π) = arcsin 0 = 0 ≠ π', arccos: 'arccos(cos 2π) = arccos 1 = 0 ≠ 2π', arctg: 'arctg(tg π) = arctg 0 = 0 ≠ π', arcctg: 'arcctg(ctg 3π/2) = arcctg 0 = π/2 ≠ 3π/2' }[g] +
-        '. Ovdje je sve u redu, jer je lijeva strana prije ovog koraka iz kodomena od ' + g + ' (to smo dobili za y ∈ K(f)).' });
-    var hpart = fnName(h) + '(' + leftAfterA + ')';
-    if (!C.isZero()) inv.push({ math: hpart + (C.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, '') + ' = ' + linHtml(B, Z), rule: (C.sign() > 0 ? 'Oduzimamo ' + fq(C) : 'Dodajemo ' + fq(C.neg())) + ' na obje strane.' });
-    var numer = hpart + (C.isZero() ? '' : (C.sign() > 0 ? ' ' + MINUS + ' ' : ' + ') + hqMag(C, ''));
-    var yForm = finvHtml(h, A, B, C, D, Y);
+    var applyWhy = trig ?
+      G + '(' + g + ' u) = u važi samo kad je u ∈ ' + RESTR_TXT[g] + '. Upravo zato smo na početku suzili domen tako da je u = ' + uP + ' u tom intervalu. Bez suženja ovaj korak bi bio pogrešan: npr. ' + PAIR_EX[G] + '.' :
+      G + '(' + g + ' u) = u važi za svako u iz domena od ' + g + ' (' + ivPl(gd.U) + '), pa desna strana postaje samo ' + uP + '. Obrnuto ne važi uvijek: ' + g + '(' + G + ' t) = t samo za t ∈ ' + ivPl(gd.R) + '. Npr. ' + PAIR_EX[g] + '. Ovdje je sve u redu, jer je lijeva strana prije ovog koraka iz kodomena od ' + g + ' (to smo dobili za y ∈ K(f)).';
+    inv.push({ math: fnName(G) + '(' + leftA + ') = ' + uH, rule: 'Primjenjujemo ' + G + ' na obje strane.', why: applyWhy });
+    var gpart = fnName(G) + '(' + leftA + ')';
+    var k0 = ONE.div(B), c00 = C.neg().scale(ONE.div(B));
+    var yForm = finvHtml(G, A, k0, c00, D, Y);
+    if (!C.isZero()) inv.push({ math: gpart + hpTail(C.neg()) + ' = ' + linHtml(B, new P()), rule: (C.nTerms() > 1 ? 'Oduzimamo (' + fp(C) + ')' : Cv > 0 ? 'Oduzimamo ' + fp(C) : 'Dodajemo ' + fp(C.neg())) + ' na obje strane.' });
+    var numer = gpart + hpTail(C.neg());
     if (!B.isOne()) {
       inv.push({ math: X + ' = ' + fr(numer, hq(B)), rule: 'Dijelimo obje strane sa ' + fq(B) + '.' });
-      inv.push({ math: X + ' = ' + yForm, rule: C.isZero() ? 'Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(ONE.div(B)) + ', pa taj broj pišemo kao koeficijent ispred.' : 'Razdvajamo razlomak: (a ' + MINUS + ' b)/c = a/c ' + MINUS + ' b/c, i sređujemo znakove.' });
-    } else if (C.isZero()) {
-      inv[inv.length - 1].math = fnName(h) + '(' + leftAfterA + ') = ' + X;
-      inv.push({ math: X + ' = ' + yForm, rule: 'Okrenemo jednakost.' });
+      inv.push({ math: X + ' = ' + yForm, rule: C.isZero() ? 'Dijeliti sa ' + fq(B) + ' isto je što i množiti sa ' + fq(k0) + ', pa taj broj pišemo kao koeficijent ispred.' : 'Razdvajamo razlomak: (a ' + MINUS + ' b)/c = a/c ' + MINUS + ' b/c. ' + explainDiv(C.neg(), B, c00) + '.' });
     } else {
+      if (C.isZero()) inv[inv.length - 1].math = gpart + ' = ' + X;
       inv.push({ math: X + ' = ' + yForm, rule: 'Okrenemo jednakost.' });
     }
-    /* neparnost/parnost: h(−t) kad je D = 0 i A < 0 */
-    var invA = A, invK = ONE.div(B);
-    if (D.isZero() && A.sign() < 0) {
+    /* parnost: G(−t) kad je D = 0 i A < 0 */
+    var invA = A, invK = k0, invC = c00;
+    if (D.isZero() && A.sign() < 0 && G !== 'cos') {
       invA = A.neg();
-      if (h !== 'cos') invK = invK.neg();
-      var tA = innerHtmlSafe(invA, D, '<i>t</i>');
-      inv.push({ math: X + ' = ' + finvHtml(h, invA, B, C, D, Y, invK),
-        rule: h === 'cos' ? 'cos je parna funkcija: cos(' + MINUS + 't) = cos t, pa minus u argumentu nestaje.' : h + ' je neparna funkcija: ' + h + '(' + MINUS + 't) = ' + MINUS + h + ' t, pa minus izlazi ispred.',
-        why: h === 'cos' ? 'Grafik kosinusa je simetričan u odnosu na y-osu, pa je vrijednost u ' + MINUS + 't ista kao u t.' : 'Grafik funkcije ' + h + ' je simetričan u odnosu na koordinatni početak, pa je vrijednost u ' + MINUS + 't suprotna vrijednosti u t.' });
+      var rule, why;
+      if (ODD[G]) { invK = k0.neg(); rule = G + ' je neparna funkcija: ' + G + '(' + MINUS + 't) = ' + MINUS + G + ' t, pa minus izlazi ispred.'; why = 'Grafik funkcije ' + G + ' je simetričan u odnosu na koordinatni početak, pa je vrijednost u ' + MINUS + 't suprotna vrijednosti u t.'; }
+      else { invK = k0.neg(); invC = c00.add(pp(1).scale(k0)); rule = 'Koristimo ' + G + '(' + MINUS + 't) = π ' + MINUS + ' ' + G + ' t' + (k0.isOne() ? '' : ' i množimo zagradu sa ' + fq(k0)) + '.'; why = G + '(' + MINUS + 't) i ' + G + ' t su uglovi koji se dopunjuju do π (grafik ' + G + ' je simetričan oko tačke (0, π/2)).'; }
+      inv.push({ math: X + ' = ' + finvHtml(G, invA, invK, invC, D, Y), rule: rule, why: why });
+    } else if (D.isZero() && A.sign() < 0 && G === 'cos') {
+      invA = A.neg();
+      inv.push({ math: X + ' = ' + finvHtml(G, invA, invK, invC, D, Y), rule: 'cos je parna funkcija: cos(' + MINUS + 't) = cos t, pa minus u argumentu nestaje.', why: 'Grafik kosinusa je simetričan u odnosu na y-osu, pa je vrijednost u ' + MINUS + 't ista kao u t.' });
     }
-    var finvH = finvHtml(h, invA, B, C, D, X, invK);
+    var finvH = finvHtml(G, invA, invK, invC, D, X);
     inv.push({ math: '<i>f</i><sup>' + MINUS + '1</sup>(' + X + ') = ' + finvH, rule: 'Zamijenimo x i y.',
       why: 'Po dogovoru, inverz pišemo sa x kao nezavisnom promjenljivom. Zamjena slova x ↔ y je isto što i odraz grafika preko prave y = x: tačka (a, b) prelazi u (b, a).' });
     inv.push({ math: '<i>D</i>(<i>f</i><sup>' + MINUS + '1</sup>) = <i>K</i>(<i>f</i>) = ' + rngH + '<br><i>K</i>(<i>f</i><sup>' + MINUS + '1</sup>) = <i>D</i>(<i>f</i>) = ' + domH,
       rule: 'Domen inverza je kodomen polazne funkcije, i obrnuto.',
-      why: 'f⁻¹ "vraća" ono što je f uradila: ulaz u f⁻¹ je izlaz iz f. Zato f⁻¹ prima samo brojeve iz K(f). Formula ' + h + '(…) je sama po sebi definisana ' + (h === 'sin' || h === 'cos' ? 'za svako x' : 'na mnogo širem skupu') + ', ali f⁻¹ je samo jedan luk te krive, iznad intervala ' + ivPlain(rl, rh, rlc, rhc) + '. Bez tog ograničenja ' + h + ' ne bi bila injektivna, pa ne bi bila inverz.' });
+      why: 'f⁻¹ "vraća" ono što je f uradila: ulaz u f⁻¹ je izlaz iz f. Zato f⁻¹ prima samo brojeve iz K(f), a daje brojeve iz D(f).' + (trig ? '' : ' Formula ' + G + '(…) je sama po sebi definisana na širem skupu, ali f⁻¹ je samo jedan luk te krive, iznad intervala ' + ivPl(rng) + '. Bez tog ograničenja ' + G + ' ne bi bila injektivna, pa ne bi bila inverz.') });
 
-    /* Rezultat */
+    /* 6. Koraci skiciranja f⁻¹ = (1/B)·G((x − D)/A) − C/B */
+    var isteps = [];
+    var GDomTxt = Gd.U[0] ? ivPl(Gd.U) : 'ℝ';
+    isteps.push(mergeStep({ title: 'Osnovna funkcija', eq: Y + ' = ' + fnName(G) + '(' + X + ')', skip: false,
+      desc: (Gd.kind === 'trig' ? 'Polazimo od luka funkcije ' + G + ' na ' + RESTR_TXT[G] + ', jer je to tačno kodomen od ' + g + '. Ne crta se cijela ' + (G === 'sin' ? 'sinusoida' : G === 'cos' ? 'kosinusoida' : 'kriva') + ', nego samo taj luk.' : 'Polazimo od grafika ' + G + ' x. Domen ' + GDomTxt + ', kodomen ' + ivPl(Gd.R) + '.'),
+      why: 'f⁻¹ dobijamo od osnovne funkcije ' + G + ' istim postupkom kao f od ' + g + ', samo što se koraci primjenjuju "zamijenjeno": ono što je kod f djelovalo po y-osi, kod f⁻¹ djeluje po x-osi, i obrnuto.' }, stepI(Gd, 1, 0, 1, 0)));
+    var aIDesc;
+    if (A.isOne()) aIDesc = 'A = 1, pa nema razvlačenja ni odraza po x-osi.';
+    else {
+      aIDesc = Aabs.isOne() ? '' : Aabs.val() > 1 ? 'Grafik se razvlači od y-ose ' + fq(Aabs) + ' puta (svaka x-koordinata se množi sa ' + fq(Aabs) + ').' : 'Grafik se sabija prema y-osi (svaka x-koordinata se množi sa ' + fq(Aabs) + ').';
+      if (A.sign() < 0) aIDesc += aIDesc ? ' Zatim odraz preko y-ose, jer je A < 0.' : 'Odraz preko y-ose, jer je A < 0.';
+    }
+    isteps.push(mergeStep({ title: 'Faktor A po x-osi', eq: Y + ' = ' + fnName(G) + '(' + innerHtmlSafe(A, new P(), X) + ')', skip: A.isOne(), desc: aIDesc,
+      why: 'Kod f je A razvlačio grafik po y-osi. Inverz zamjenjuje uloge osa, pa isti broj A kod f⁻¹ razvlači po x-osi. Tačka (t, ' + G + ' t) prelazi u (A·t, ' + G + ' t).' }, stepI(Gd, Av, 0, 1, 0)));
+    isteps.push(mergeStep({ title: 'Pomjeranje po x-osi', eq: Y + ' = ' + fnName(G) + '(' + innerHtmlSafe(A, D, X) + ')', skip: D.isZero(),
+      desc: D.isZero() ? 'D = 0, pa nema pomjeranja po x-osi.' : 'Grafik se pomjera ' + (Dv > 0 ? 'udesno' : 'ulijevo') + ' za ' + fp(Dv > 0 ? D : D.neg()) + '. Sada je domen tačno K(f) = ' + ivPl(rng) + '.',
+      why: 'Kod f je D pomjerao grafik naviše ili naniže. Kod f⁻¹ isti broj pomjera grafik udesno ili ulijevo: argument (x ' + MINUS + ' D)/A je 0 tačno kad je x = D.' }, stepI(Gd, Av, Dv, 1, 0)));
+    var kI = k0, kIabs = kI.abs(), bIDesc;
+    if (B.isOne()) bIDesc = 'B = 1, pa je koeficijent 1/B = 1 i nema promjene po y-osi.';
+    else {
+      bIDesc = kIabs.isOne() ? '' : 'Svaka y-koordinata se množi sa ' + fq(kIabs) + (kIabs.val() > 1 ? ', pa se grafik razvlači po y-osi.' : ', pa se grafik sabija po y-osi ' + fq(Babs) + ' puta.');
+      if (B.sign() < 0) bIDesc += bIDesc ? ' Zatim odraz preko x-ose, jer je 1/B < 0.' : 'Odraz preko x-ose, jer je 1/B < 0.';
+    }
+    isteps.push(mergeStep({ title: 'Faktor 1/B po y-osi', eq: Y + ' = ' + hcoef(kI) + fnName(G) + '(' + innerHtmlSafe(A, D, X) + ')', skip: B.isOne(), desc: bIDesc,
+      why: 'Kod f je B sabijao grafik po x-osi |B| puta. Kod f⁻¹ isto sabijanje ide po y-osi: zato se vrijednosti množe sa 1/B.' }, stepI(Gd, Av, Dv, kI.val(), 0)));
+    isteps.push(mergeStep({ title: 'Pomjeranje po y-osi', eq: Y + ' = ' + finvHtml(G, A, k0, c00, D, X), skip: C.isZero(),
+      desc: C.isZero() ? 'C = 0, pa nema pomjeranja po y-osi.' : 'Grafik se pomjera ' + (c00.val() > 0 ? 'naviše' : 'naniže') + ' za ' + fp(c00.val() > 0 ? c00 : c00.neg()) + ' (to je ' + MINUS + 'C/B). Ovo je konačni grafik f⁻¹.',
+      why: 'Kod f je pomak po x-osi bio ' + MINUS + 'C/B. Kod f⁻¹ isti pomak ide po y-osi. Provjera: kodomen f⁻¹ je sada tačno D(f) = ' + ivPl(dom) + '.' }, stepI(Gd, Av, Dv, kI.val(), c00.val())));
+
+    var last = isteps[isteps.length - 1];
+    if (finvH !== finvHtml(G, A, k0, c00, D, X)) last.eq += ' = ' + finvH;
+    /* pogled za grafike */
+    var fxr = domN[0] !== null ? [domN[0], domN[1]] : steps[4].xr;
+    var fyr;
+    if (rngN[0] !== null) fyr = [rngN[0], rngN[1]];
+    else {
+      var a0 = fxr[0] + (fxr[1] - fxr[0]) * 0.07, a1 = fxr[1] - (fxr[1] - fxr[0]) * 0.07, mn = Infinity, mx = -Infinity;
+      for (var i = 0; i <= 200; i++) { var yy = fnum(a0 + (a1 - a0) * i / 200); if (isFinite(yy)) { mn = Math.min(mn, yy); mx = Math.max(mx, yy); } }
+      fyr = [mn, mx];
+    }
+
     var res = {
-      prob: prob, g: g, h: h, base: bs,
-      fHtml: fH, fPlain: fPlain(g, A, B, C, D), finvHtml: finvH, finvPlain: finvPlain(h, invA, B, C, D, 'x', invK),
-      dom: dom, rng: rng, domHtml: domH, rngHtml: rngH, domPlain: ivPlain(dom.lo, dom.hi, dom.lc, dom.hc), rngPlain: ivPlain(rl, rh, rlc, rhc),
+      prob: prob, g: g, G: G, h: G, trig: trig, base: gd, inv: Gd,
+      fHtml: fH, fPlain: fPlain(g, A, B, C, D), finvHtml: finvH, finvPlain: finvPlain(G, invA, invK, invC, D, 'x'),
+      dom: dom, rng: rng, domN: domN, rngN: rngN, domHtml: domH, rngHtml: rngH, domPlain: ivPl(dom), rngPlain: ivPl(rng),
       inc: inc, monoWhy: monoWhy,
-      domLines: domLines, rngLines: rngLines, invLines: inv, steps: steps,
-      points: pts, asym: asym, assumptions: assumptions, notes: (prob.notes || []).concat(notes),
-      f: fnum, finv: finvnum, uFn: function (x) { return Bv * x + Cv; }
+      domLines: domLines, rngLines: rngLines, invLines: inv, steps: steps, isteps: isteps,
+      points: pts, asym: asym, assumptions: assumptions, notes: (prob.notes || []).slice(),
+      f: fnum, finv: finvnum, view: { x: fxr, y: fyr }
     };
     res.validation = validate(res);
     return res;
@@ -1137,68 +1245,77 @@ var Arcus = (function () {
 
   /* ---------- Provjera ---------- */
   function validate(r) {
-    var f = r.f, fi = r.finv, bs = r.base;
-    var lo = r.rng.lo.val(), hi = r.rng.hi.val();
-    var maxErr = 0, n = 0, problems = [];
-    var tolY = function (y) { return 1e-9 * (1 + Math.abs(y)); };
-    // f(f⁻¹(y)) = y na K(f)
+    var f = r.f, fi = r.finv, problems = [], n = 0, maxErr = 0;
+    var A = r.prob.A.val(), Dv = r.prob.D.val();
+    var y0, y1, x0, x1;
+    if (r.rngN[0] !== null) { y0 = r.rngN[0]; y1 = r.rngN[1]; } else { y0 = Dv - 20 * Math.abs(A); y1 = Dv + 20 * Math.abs(A); }
     for (var i = 0; i <= 400; i++) {
       var t = i / 400;
-      var y = lo + (hi - lo) * t;
-      if ((i === 0 && !r.rng.lc) || (i === 400 && !r.rng.hc)) continue;
-      if (!bs.bounded) y = lo + (hi - lo) * (0.002 + 0.996 * t);
+      if ((i === 0 && !r.rngN[2]) || (i === 400 && !r.rngN[3])) t = i === 0 ? 0.002 : 0.998;
+      var y = y0 + (y1 - y0) * t;
       var x = fi(y);
       if (!isFinite(x)) { problems.push('f⁻¹ nije definisana u tački ' + y.toFixed(4)); continue; }
-      if (bs.bounded && (x < r.dom.lo.val() - 1e-9 || x > r.dom.hi.val() + 1e-9)) problems.push('f⁻¹(' + y.toFixed(4) + ') je van domena od f');
-      var e = Math.abs(f(x) - y); n++;
+      if (!inIv(x, r.domN[0] === null ? null : r.domN[0] - 1e-9, r.domN[1] === null ? null : r.domN[1] + 1e-9, true, true)) problems.push('f⁻¹(' + y.toFixed(4) + ') je van domena od f');
+      var e = Math.abs(f(x) - y) / (1 + Math.abs(y)); n++;
       if (e > maxErr) maxErr = e;
-      if (e > tolY(y) * 100) problems.push('f(f⁻¹(' + y.toFixed(4) + ')) ≠ ' + y.toFixed(4));
+      if (!(e < 1e-7)) problems.push('f(f⁻¹(' + y.toFixed(4) + ')) ≠ ' + y.toFixed(4));
     }
-    // f⁻¹(f(x)) = x na D(f)
-    var xl, xh;
-    if (bs.bounded) { xl = r.dom.lo.val(); xh = r.dom.hi.val(); }
-    else { var B = r.prob.B.val(), C = r.prob.C.val(); xl = Math.min((-8 - C) / B, (8 - C) / B); xh = Math.max((-8 - C) / B, (8 - C) / B); }
-    var maxErr2 = 0;
+    x0 = r.domN[0] !== null ? r.domN[0] : r.view.x[0]; x1 = r.domN[1] !== null ? r.domN[1] : r.view.x[1];
     for (var j = 0; j <= 400; j++) {
-      var xx = xl + (xh - xl) * j / 400;
+      var s = j / 400;
+      if ((j === 0 && !r.domN[2]) || (j === 400 && !r.domN[3])) s = j === 0 ? 0.002 : 0.998;
+      var xx = x0 + (x1 - x0) * s;
       var back = fi(f(xx));
       var e2 = Math.abs(back - xx) / (1 + Math.abs(xx)); n++;
-      if (e2 > maxErr2) maxErr2 = e2;
+      if (e2 > maxErr) maxErr = e2;
       if (!(e2 < 1e-6)) problems.push('f⁻¹(f(' + xx.toFixed(4) + ')) ≠ ' + xx.toFixed(4));
     }
-    // tačne vrijednosti tačaka
     r.points.forEach(function (p) {
-      if (Math.abs(f(p.x.v) - p.y.v) > 1e-9 * (1 + Math.abs(p.y.v))) problems.push('tačka (' + p.x.plain + ', ' + p.y.plain + ') ne leži na grafiku');
+      if (!(Math.abs(f(p.x.v) - p.y.v) <= 1e-9 * (1 + Math.abs(p.y.v)))) problems.push('tačka (' + p.x.plain + ', ' + p.y.plain + ') ne leži na grafiku');
     });
-    // krajevi kodomena se slažu sa monotonošću
-    if (bs.bounded) {
-      var a = f(r.dom.lo.val()), b = f(r.dom.hi.val());
-      var expLo = r.inc ? a : b, expHi = r.inc ? b : a;
-      if (Math.abs(expLo - lo) > 1e-9 || Math.abs(expHi - hi) > 1e-9) problems.push('krajevi kodomena se ne slažu sa vrijednostima na krajevima domena');
+    if (r.domN[0] !== null && r.domN[2] && r.domN[3] && r.rngN[0] !== null) {
+      var a = f(r.domN[0]), b = f(r.domN[1]);
+      var lo = r.inc ? a : b, hi = r.inc ? b : a;
+      if (Math.abs(lo - r.rngN[0]) > 1e-9 || Math.abs(hi - r.rngN[1]) > 1e-9) problems.push('krajevi kodomena se ne slažu sa vrijednostima na krajevima domena');
     }
-    return { ok: problems.length === 0, maxErr: Math.max(maxErr, maxErr2), n: n, problems: problems.slice(0, 5) };
+    // posljednji korak skiciranja mora dati baš f i f⁻¹
+    var sf = r.steps[r.steps.length - 1], si = r.isteps[r.isteps.length - 1];
+    for (var m = 1; m < 50; m++) {
+      var xa = x0 + (x1 - x0) * m / 50, ya = y0 + (y1 - y0) * m / 50;
+      if (!(Math.abs(sf.fn(xa) - f(xa)) <= 1e-9 * (1 + Math.abs(f(xa))))) { problems.push('koraci skiciranja f ne daju f'); break; }
+      if (!(Math.abs(si.fn(ya) - fi(ya)) <= 1e-9 * (1 + Math.abs(fi(ya))))) { problems.push('koraci skiciranja f⁻¹ ne daju f⁻¹'); break; }
+    }
+    // monotonost na domenu (injektivnost)
+    var prev = null, dir = r.inc ? 1 : -1;
+    for (var k = 1; k < 300; k++) {
+      var xk = x0 + (x1 - x0) * k / 300, yk = f(xk);
+      if (prev !== null && (yk - prev) * dir <= 0) { problems.push('f nije strogo monotona na domenu'); break; }
+      prev = yk;
+    }
+    return { ok: problems.length === 0, maxErr: maxErr, n: n, problems: problems.slice(0, 5) };
   }
 
   /* ---------- Generator zadataka ---------- */
   function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function randomProblem() {
-    for (var tries = 0; tries < 200; tries++) {
-      var g = rnd(['arcsin', 'arcsin', 'arccos', 'arccos', 'arctg', 'arcctg']);
+  function randomProblem(kind) {
+    for (var tries = 0; tries < 300; tries++) {
+      var trig = kind === 'trig' ? true : kind === 'arc' ? false : Math.random() < 0.35;
+      var g = trig ? rnd(['sin', 'sin', 'cos', 'cos', 'tg', 'ctg']) : rnd(['arcsin', 'arcsin', 'arccos', 'arccos', 'arctg', 'arcctg']);
       var A = rnd([q(1), q(-1), q(2), q(-2), q(3), q(1, 2), q(-1, 2), q(2), q(1)]);
       var B = rnd([q(1), q(-1), q(2), q(-2), q(3), q(1, 2), q(-3), q(1, 3), q(2)]);
-      var C = rnd([q(0), q(1), q(-1), q(2), q(-2), q(3), q(-3), q(1, 2)]);
-      var D = rnd([pr(0), pr(1), pr(-1), pr(2), pp(1, 2), pp(-1, 2), pp(1, 4), pp(1), pp(-1, 4), pr(0)]);
+      var C = trig ? rnd([pr(0), pp(-1, 3), pp(1, 3), pp(-1, 4), pp(1, 4), pp(1, 6), pp(-1, 2), pp(1, 2), pr(1), pr(0)]) : rnd([pr(0), pr(1), pr(-1), pr(2), pr(-2), pr(3), pr(-3), pr(1, 2)]);
+      var D = trig ? rnd([pr(0), pr(1), pr(-1), pr(2), pr(-2), pr(1, 2), pr(0)]) : rnd([pr(0), pr(1), pr(-1), pr(2), pp(1, 2), pp(-1, 2), pp(1, 4), pp(1), pp(-1, 4), pr(0)]);
       if (A.isOne() && B.isOne() && C.isZero() && D.isZero()) continue;
-      if (Math.abs(C.div(B).val()) > 4) continue;
+      if (Math.abs(C.val() / B.val()) > 4) continue;
       if (Math.abs(D.val()) + Math.abs(A.val()) * 3.2 > 8) continue;
       return { g: g, A: A, B: B, C: C, D: D, notes: [] };
     }
-    return { g: 'arcsin', A: q(2), B: q(3), C: q(-1), D: pp(1, 4), notes: [] };
+    return { g: 'arcsin', A: q(2), B: q(3), C: pr(-1), D: pp(1, 4), notes: [] };
   }
 
   return {
     parse: parse, solve: solve, randomProblem: randomProblem, MathErr: MathErr,
-    Q: Q, P: P, q: q, pr: pr, pp: pp, fp: fp, hp: hp, fq: fq, BASE: BASE, fHtml: fHtml, trigExact: trigExact, fs: fs, explainAddP: explainAddP, explainMul: explainMul
+    Q: Q, P: P, q: q, pr: pr, pp: pp, fp: fp, hp: hp, fq: fq, BASE: FUN, FUN: FUN, fHtml: fHtml, trigExact: trigExact, fs: fs
   };
 })();
 if (typeof module !== 'undefined') module.exports = Arcus;
@@ -1310,7 +1427,7 @@ if (typeof module !== 'undefined') module.exports = Arcus;
       if (c.dom && c.ends) {
         [[c.dom[0], c.ends[0]], [c.dom[1], c.ends[1]]].forEach(function (e) {
           var yy = c.fn(e[0]);
-          if (isFinite(yy)) g.push('<circle class="end ' + c.cls + (e[1] ? '' : ' hollow') + '" cx="' + X(e[0]) + '" cy="' + Y(yy) + '" r="4.2"/>');
+          if (e[1] !== null && isFinite(yy)) g.push('<circle class="end ' + c.cls + (e[1] ? '' : ' hollow') + '" cx="' + X(e[0]) + '" cy="' + Y(yy) + '" r="4.2"/>');
         });
       }
     });
@@ -1343,14 +1460,22 @@ if (typeof module !== 'undefined') module.exports = Arcus;
   }
 
   /* ---- grafici za rezultat ---- */
-  function fBox(r) {
-    var bs = r.base, B = r.prob.B.val(), C = r.prob.C.val();
-    var lo, hi;
-    if (bs.bounded) { lo = r.dom.lo.val(); hi = r.dom.hi.val(); }
-    else { var a = (-6 - C) / B, b = (6 - C) / B; lo = Math.min(a, b); hi = Math.max(a, b); }
-    var bx = sampleBox(r.f, lo, hi);
-    bx[2] = Math.min(bx[2], r.rng.lo.val()); bx[3] = Math.max(bx[3], r.rng.hi.val());
-    return bx;
+  function fBox(r) { return [r.view.x[0], r.view.x[1], r.view.y[0], r.view.y[1]]; }
+  function swapBox(b) { return [b[2], b[3], b[0], b[1]]; }
+  function curveFrom(fn, iv, cls) { // iv = [lo|null, hi|null, lc, hc]
+    if (iv[0] === null) return { fn: fn, dom: null, cls: cls };
+    var closed = iv[2] && iv[3];
+    return { fn: fn, dom: [iv[0], iv[1]], open: !closed, ends: [iv[2] ? true : null, iv[3] ? true : null], cls: cls };
+  }
+  function fCurve(r, cls) { return curveFrom(r.f, r.domN, cls || 'cf'); }
+  function invCurve(r, cls) { return curveFrom(r.finv, r.rngN, cls || 'ci'); }
+  function asymFor(r, inverse, cls) {
+    var h = [], v = [];
+    r.asym.forEach(function (a) {
+      var horiz = (a.dir === 'h') !== !!inverse;
+      (horiz ? h : v).push({ v: a.n.v, l: a.n.plain, cls: cls });
+    });
+    return { h: h, v: v };
   }
   function ticksFor(r, inverse) {
     var xt = [], yt = [];
@@ -1359,70 +1484,62 @@ if (typeof module !== 'undefined') module.exports = Arcus;
       var a = { v: p.x.v, l: p.x.plain, pri: pri }, b = { v: p.y.v, l: p.y.plain, pri: pri };
       if (inverse) { xt.push(b); yt.push(a); } else { xt.push(a); yt.push(b); }
     });
-    r.asym.forEach(function (a) { (inverse ? xt : yt).push({ v: a.v, l: a.plain, pri: 4 }); });
+    var as = asymFor(r, inverse);
+    as.h.forEach(function (a) { yt.push({ v: a.v, l: a.l, pri: 4 }); });
+    as.v.forEach(function (a) { xt.push({ v: a.v, l: a.l, pri: 4 }); });
     return { xt: xt, yt: yt };
-  }
-  function fCurve(r, cls) {
-    var bs = r.base;
-    return { fn: r.f, dom: bs.bounded ? [r.dom.lo.val(), r.dom.hi.val()] : null, ends: bs.bounded ? [true, true] : null, cls: cls || 'cf' };
-  }
-  function invCurve(r, cls) {
-    var lo = r.rng.lo.val(), hi = r.rng.hi.val();
-    return { fn: r.finv, dom: [lo, hi], open: !r.rng.lc || !r.rng.hc, ends: r.rng.lc && r.rng.hc ? [true, true] : null, cls: cls || 'ci' };
   }
   function ptsFor(r, inverse, cls) {
     return r.points.map(function (p) { return { x: inverse ? p.y.v : p.x.v, y: inverse ? p.x.v : p.y.v, proj: true, cls: cls, end: p.kind === 'end' }; });
   }
   function graphF(r) {
-    var t = ticksFor(r, false);
+    var t = ticksFor(r, false), as = asymFor(r, false, 'cf');
     return plot({ win: makeWin(fBox(r)), curves: [fCurve(r)], pts: ptsFor(r, false, 'cf'), xt: t.xt, yt: t.yt,
-      hasym: r.asym.map(function (a) { return { v: a.v, cls: 'cf' }; }), label: 'Grafik funkcije f', legend: [{ t: 'f(x) = ' + r.fPlain, cls: 'cf' }] });
+      hasym: as.h, vasym: as.v, label: 'Grafik funkcije f', legend: [{ t: 'f(x) = ' + r.fPlain, cls: 'cf' }] });
   }
   function graphInv(r) {
-    var b = fBox(r), t = ticksFor(r, true);
-    return plot({ win: makeWin([b[2], b[3], b[0], b[1]]), curves: [invCurve(r)], pts: ptsFor(r, true, 'ci'), xt: t.xt, yt: t.yt,
-      vasym: r.asym.map(function (a) { return { v: a.v, cls: 'ci' }; }), label: 'Grafik inverzne funkcije', legend: [{ t: 'f⁻¹(x) = ' + r.finvPlain, cls: 'ci' }] });
+    var t = ticksFor(r, true), as = asymFor(r, true, 'ci');
+    return plot({ win: makeWin(swapBox(fBox(r))), curves: [invCurve(r)], pts: ptsFor(r, true, 'ci'), xt: t.xt, yt: t.yt,
+      hasym: as.h, vasym: as.v, label: 'Grafik inverzne funkcije', legend: [{ t: 'f⁻¹(x) = ' + r.finvPlain, cls: 'ci' }] });
   }
   function graphBoth(r) {
-    var b = fBox(r), box = unite(b, [b[2], b[3], b[0], b[1]]);
-    var t1 = ticksFor(r, false), t2 = ticksFor(r, true);
+    var b = fBox(r), box = unite(b, swapBox(b));
+    var t1 = ticksFor(r, false), t2 = ticksFor(r, true), a1 = asymFor(r, false, 'cf'), a2 = asymFor(r, true, 'ci');
     return plot({ win: makeWin(box, { equal: true, maxRatio: 1.05, minRatio: 0.8 }), curves: [fCurve(r), invCurve(r)], diag: true,
       pts: ptsFor(r, false, 'cf').concat(ptsFor(r, true, 'ci')).map(function (p) { p.proj = false; return p; }),
-      xt: t1.xt.concat(t2.xt), yt: t1.yt.concat(t2.yt),
-      hasym: r.asym.map(function (a) { return { v: a.v, cls: 'cf' }; }), vasym: r.asym.map(function (a) { return { v: a.v, cls: 'ci' }; }),
+      xt: t1.xt.concat(t2.xt), yt: t1.yt.concat(t2.yt), hasym: a1.h.concat(a2.h), vasym: a1.v.concat(a2.v),
       label: 'Grafici f i f⁻¹ sa pravom y = x', legend: [{ t: 'f', cls: 'cf' }, { t: 'f⁻¹', cls: 'ci' }, { t: 'y = x', cls: 'cd' }] });
   }
 
-  /* ---- koraci transformacije ---- */
+  /* ---- koraci transformacije (za f i za f⁻¹) ---- */
   function stepBox(st) {
-    var lo, hi;
-    if (st.dom) { lo = st.dom[0]; hi = st.dom[1]; }
-    else { var a = (-6 - st.u[1]) / st.u[0], b = (6 - st.u[1]) / st.u[0]; lo = Math.min(a, b); hi = Math.max(a, b); }
-    return sampleBox(st.fn, lo, hi);
+    var lo = st.dom ? st.dom[0] : st.xr[0], hi = st.dom ? st.dom[1] : st.xr[1];
+    var cut = st.dom && !st.closed ? 0.07 * (hi - lo) : 0;
+    var b = sampleBox(st.fn, lo + cut, hi - cut);
+    b[0] = lo; b[1] = hi;
+    st.hasym.forEach(function (y) { b[2] = Math.min(b[2], y); b[3] = Math.max(b[3], y); });
+    return b;
   }
-  function stepAsym(r, st, i) {
-    if (r.base.bounded) return [];
-    var lo = r.base.rng[0].val(), hi = r.base.rng[1].val();
-    var A = i >= 3 ? r.prob.A.val() : 1, D = i >= 4 ? r.prob.D.val() : 0;
-    return [lo * A + D, hi * A + D];
-  }
-  function graphStep(r, i, win) {
-    var st = r.steps[i];
-    var prev = null;
-    for (var j = i - 1; j >= 0; j--) if (!r.steps[j].skip) { prev = j; break; }
+  function graphStep(steps, i, win, cls) {
+    var st = steps[i], prev = null;
+    for (var j = i - 1; j >= 0; j--) if (!steps[j].skip) { prev = j; break; }
+    function cv(s, c) { return s.dom ? { fn: s.fn, dom: s.dom, open: !s.closed, ends: s.closed ? [true, true] : null, cls: c } : { fn: s.fn, dom: null, cls: c }; }
     var curves = [];
-    if (prev !== null) curves.push({ fn: r.steps[prev].fn, dom: r.steps[prev].dom, ends: r.steps[prev].dom ? [true, true] : null, cls: 'cg' });
-    curves.push({ fn: st.fn, dom: st.dom, ends: st.dom ? [true, true] : null, cls: 'cf' });
+    if (prev !== null) curves.push(cv(steps[prev], 'cg'));
+    curves.push(cv(st, cls));
     var xt = [], yt = [];
-    if (st.dom) { xt.push({ v: st.dom[0], l: fmtNum(st.dom[0]), pri: 3 }); xt.push({ v: st.dom[1], l: fmtNum(st.dom[1]), pri: 3 }); yt.push({ v: st.fn(st.dom[0]), l: fmtNum(st.fn(st.dom[0]), true), pri: 3 }); yt.push({ v: st.fn(st.dom[1]), l: fmtNum(st.fn(st.dom[1]), true), pri: 3 }); }
-    var c0 = -st.u[1] / st.u[0];
-    xt.push({ v: c0, l: fmtNum(c0), pri: 2 }); yt.push({ v: st.fn(c0), l: fmtNum(st.fn(c0), true), pri: 2 });
-    var as = stepAsym(r, st, i);
-    as.forEach(function (v) { yt.push({ v: v, l: fmtNum(v, true), pri: 4 }); });
-    var leg = [{ t: 'korak ' + (i + 1), cls: 'cf' }];
+    if (st.dom) { xt.push({ v: st.dom[0], l: fmtNum(st.dom[0], true), pri: 3 }); xt.push({ v: st.dom[1], l: fmtNum(st.dom[1], true), pri: 3 }); }
+    st.marks.forEach(function (m, k) {
+      var pri = k === 1 ? 2 : 1;
+      xt.push({ v: m[0], l: fmtNum(m[0], true), pri: pri }); yt.push({ v: m[1], l: fmtNum(m[1], true), pri: pri + 1 });
+    });
+    st.hasym.forEach(function (v) { yt.push({ v: v, l: fmtNum(v, true), pri: 4 }); });
+    st.vasym.forEach(function (v) { xt.push({ v: v, l: fmtNum(v, true), pri: 4 }); });
+    var leg = [{ t: 'korak ' + (i + 1), cls: cls }];
     if (prev !== null) leg.push({ t: 'korak ' + (prev + 1), cls: 'cg' });
-    return plot({ win: win, curves: curves, xt: xt, yt: yt, hasym: as.map(function (v) { return { v: v, cls: 'cf' }; }),
-      pts: [{ x: c0, y: st.fn(c0), proj: true, cls: 'cf' }], label: 'Korak ' + (i + 1) + ' skiciranja', legend: leg });
+    return plot({ win: win, curves: curves, xt: xt, yt: yt,
+      hasym: st.hasym.map(function (v) { return { v: v, cls: cls }; }), vasym: st.vasym.map(function (v) { return { v: v, cls: cls }; }),
+      pts: st.marks.map(function (m) { return { x: m[0], y: m[1], proj: true, cls: cls, end: true }; }), label: 'Korak ' + (i + 1) + ' skiciranja', legend: leg });
   }
   /* broj → tekst sa π gdje je moguće (samo za oznake na grafiku koraka) */
   function fmtNum(v, piOk) {
@@ -1474,24 +1591,43 @@ if (typeof module !== 'undefined') module.exports = Arcus;
   }
   function pointsTable(r) {
     var rows = r.points.map(function (p) {
-      var lbl = p.kind === 'end' ? 'kraj domena' : p.kind === 'mid' ? (p.label === 'u = 0' ? 'argument = 0' : 'argument = ' + p.label.slice(4)) : p.label;
+      var lbl = p.kind === 'end' ? 'kraj domena (' + p.label.replace('u =', 'argument =') + ')' : p.kind === 'mid' ? p.label.replace('u =', 'argument =') : p.label;
       return '<tr><td>' + esc(lbl) + '</td><td class="m">' + p.x.html + '</td><td class="m">' + p.y.html + '</td><td class="m ci-t">(' + p.y.html + ', ' + p.x.html + ')</td></tr>';
     }).join('');
-    var asy = r.asym.length ? '<p class="note">Horizontalne asimptote od f: <span class="m"><i>y</i> = ' + r.asym[0].html + '</span> i <span class="m"><i>y</i> = ' + r.asym[1].html + '</span>. Kod ' + FI + ' to postaju vertikalne asimptote <span class="m"><i>x</i> = ' + r.asym[0].html + '</span> i <span class="m"><i>x</i> = ' + r.asym[1].html + '</span>.</p>' : '';
+    var asy = '';
+    if (r.asym.length) {
+      var h = r.asym[0].dir === 'h';
+      var list = function (v) { return r.asym.map(function (a) { return '<span class="m"><i>' + v + '</i> = ' + a.n.html + '</span>'; }).join(' i '); };
+      asy = '<p class="note">' + (h ? 'Horizontalne' : 'Vertikalne') + ' asimptote od f: ' + list(h ? 'y' : 'x') + '. Kod ' + FI + ' to postaju ' + (h ? 'vertikalne' : 'horizontalne') + ' asimptote ' + list(h ? 'x' : 'y') + '.</p>';
+    }
     return '<div class="tw"><table class="pts"><thead><tr><th>tačka</th><th><i>x</i></th><th><i>f</i>(<i>x</i>)</th><th class="ci-t">tačka na ' + FI + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + asy +
-      whyHtml('Ove tačke su dovoljne za skicu: krajevi domena daju krajeve grafika, tačka gdje je argument 0 je "središte" arcus funkcije, a presjeci sa osama se crtaju uvijek. Svaka tačka (a, b) grafika f daje tačku (b, a) grafika f⁻¹, zato je posljednja kolona samo zamijenjen par.') +
+      whyHtml('Ove tačke su dovoljne za skicu: krajevi domena daju krajeve grafika, srednja tačka osnovne funkcije pokazuje gdje je "središte" luka, a presjeci sa osama se crtaju uvijek. Svaka tačka (a, b) grafika f daje tačku (b, a) grafika f⁻¹, zato je posljednja kolona samo zamijenjen par.') +
       (r.points.some(function (p) { return !p.x.exact || !p.y.exact; }) ? '<p class="note">Vrijednosti sa ≈ nisu "lijepi" brojevi, pa su date približno, na tri decimale. Na kolokvijumu se takva tačka obično samo ucrta, bez tačne vrijednosti.</p>' : '');
   }
-
+  function stepper(id, steps, label) {
+    return '<div class="stepbar" role="group" aria-label="' + label + '" data-sp="' + id + '">' + steps.map(function (st, i) {
+      return '<button type="button" class="sb' + (st.skip ? ' skip' : '') + '" data-i="' + i + '" aria-pressed="false"><b>' + (i + 1) + '</b><span>' + esc(st.title) + '</span></button>';
+    }).join('') + '</div><div class="stepview" id="' + id + '"><div class="card fig stepfig"></div><div class="stepcap"></div></div>';
+  }
+  function wireStepper(host, id, steps, cls) {
+    var box = null;
+    steps.forEach(function (st) { if (!st.skip) box = box ? unite(box, stepBox(st)) : stepBox(st); });
+    var win = makeWin(box);
+    var view = host.querySelector('#' + id), bar = host.querySelector('[data-sp="' + id + '"]');
+    var fig = view.querySelector('.stepfig'), cap = view.querySelector('.stepcap');
+    function show(i) {
+      var st = steps[i];
+      bar.querySelectorAll('.sb').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.i == i ? 'true' : 'false'); });
+      fig.innerHTML = graphStep(steps, i, win, cls);
+      cap.innerHTML = '<p class="stepeq m">' + st.eq + '</p><p>' + (st.skip ? '<span class="pill">preskače se</span> ' : '') + esc(st.desc) + '</p>' + (st.skip ? '' : whyHtml(st.why));
+    }
+    bar.querySelectorAll('.sb').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); }; });
+    show(steps.length - 1);
+  }
+  var uid = 0;
   function renderSolution(r, host, opts) {
     opts = opts || {};
-    var steps = r.steps;
-    var sbox = null;
-    steps.forEach(function (st) { if (!st.skip) sbox = sbox ? unite(sbox, stepBox(st)) : stepBox(st); });
-    var swin = makeWin(sbox, { maxRatio: 1.1, minRatio: 0.6 });
-    var bar = steps.map(function (st, i) {
-      return '<button type="button" class="sb' + (st.skip ? ' skip' : '') + '" data-i="' + i + '" aria-pressed="false"><b>' + (i + 1) + '</b><span>' + esc(st.title) + '</span></button>';
-    }).join('');
+    var id1 = 'sf' + (++uid), id2 = 'si' + uid;
     var html = '';
     if (!opts.noSummary) {
       html += '<section class="res-top"><div class="card sumcard"><h3 class="h3">Rezultat</h3>' + summaryHtml(r) +
@@ -1500,34 +1636,29 @@ if (typeof module !== 'undefined') module.exports = Arcus;
     }
     html += '<section class="sec"><h3 class="h3"><span class="no">1</span>Domen funkcije f</h3>' + linesHtml(r.domLines) + '<p class="res">D(f) = <span class="m">' + r.domHtml + '</span></p></section>';
     html += '<section class="sec"><h3 class="h3"><span class="no">2</span>Kodomen funkcije f</h3>' + linesHtml(r.rngLines) + '<p class="res">K(f) = <span class="m">' + r.rngHtml + '</span></p></section>';
-    html += '<section class="sec"><h3 class="h3"><span class="no">3</span>Monotonost i postojanje inverza</h3><p>f je <b>' + (r.inc ? 'strogo rastuća' : 'strogo opadajuća') + '</b>.</p>' + whyHtml(r.monoWhy) + '</section>';
+    html += '<section class="sec"><h3 class="h3"><span class="no">3</span>Monotonost i postojanje inverza</h3><p>f je <b>' + (r.inc ? 'strogo rastuća' : 'strogo opadajuća') + '</b>' + (r.trig ? ' na suženom domenu' : '') + '.</p>' + whyHtml(r.monoWhy) + '</section>';
     html += '<section class="sec"><h3 class="h3"><span class="no">4</span>Karakteristične tačke</h3>' + pointsTable(r) + '</section>';
-    html += '<section class="sec"><h3 class="h3"><span class="no">5</span>Skica funkcije f, korak po korak</h3><div class="stepbar" role="group" aria-label="Koraci skiciranja">' + bar + '</div><div class="stepview"><div class="card fig stepfig"></div><div class="stepcap"></div></div>' +
+    html += '<section class="sec"><h3 class="h3"><span class="no">5</span>Skica funkcije f, korak po korak</h3>' + stepper(id1, r.steps, 'Koraci skiciranja f') +
       '<figure class="card fig final"><figcaption>Konačna skica funkcije f</figcaption>' + graphF(r) + UNEQ + '</figure></section>';
     html += '<section class="sec"><h3 class="h3"><span class="no">6</span>Inverzna funkcija</h3>' + linesHtml(r.invLines) + '<p class="res">' + FI + '(<i>x</i>) = <span class="m">' + r.finvHtml + '</span>, &nbsp;<i>x</i> ∈ <span class="m">' + r.rngHtml + '</span></p></section>';
-    html += '<section class="sec"><h3 class="h3"><span class="no">7</span>Skica inverzne funkcije</h3><figure class="card fig final"><figcaption>Skica funkcije f⁻¹</figcaption>' + graphInv(r) + UNEQ + '</figure>' +
-      '<p>Grafik f⁻¹ je odraz grafika f preko prave <span class="m"><i>y</i> = <i>x</i></span>. ' + (r.base.bounded ? 'To je samo jedan luk funkcije ' + r.h + ', iznad intervala ' + esc(r.rngPlain) + ', a ne cijela kriva.' : 'Horizontalne asimptote od f postaju vertikalne asimptote od f⁻¹.') + '</p>' +
+    html += '<section class="sec"><h3 class="h3"><span class="no">7</span>Skica inverzne funkcije, korak po korak</h3>' +
+      '<p>Grafik f⁻¹ se može nacrtati na dva načina: transformacijama osnovne funkcije ' + r.G + ', isto kao f, ili odrazom grafika f preko prave <span class="m"><i>y</i> = <i>x</i></span>. Ovdje su prvo koraci, a ispod konačna skica.</p>' +
+      stepper(id2, r.isteps, 'Koraci skiciranja f⁻¹') +
+      '<figure class="card fig final"><figcaption>Konačna skica funkcije f⁻¹</figcaption>' + graphInv(r) + UNEQ + '</figure>' +
+      '<p>Provjera odrazom: grafik f⁻¹ je odraz grafika f preko prave <span class="m"><i>y</i> = <i>x</i></span>. ' + (r.inv.kind === 'trig' ? 'To je samo jedan luk funkcije ' + r.G + ', iznad intervala ' + esc(r.rngPlain) + ', a ne cijela kriva. ' : '') + (r.asym.length ? (r.asym[0].dir === 'h' ? 'Horizontalne asimptote od f postaju vertikalne asimptote od f⁻¹.' : 'Vertikalne asimptote od f postaju horizontalne asimptote od f⁻¹.') : '') + '</p>' +
       whyHtml('Tačka (a, b) je na grafiku f ako je f(a) = b. Tada je f⁻¹(b) = a, pa je (b, a) na grafiku f⁻¹. Tačke (a, b) i (b, a) su uvijek simetrične u odnosu na pravu y = x, pa je i cijeli grafik f⁻¹ odraz grafika f preko te prave.') + '</section>';
     var v = r.validation;
-    html += '<section class="sec"><h3 class="h3"><span class="no">8</span>Provjera</h3><p class="okline">Provjereno računarom: <span class="m">' + FI + '(<i>f</i>(<i>x</i>)) = <i>x</i></span> i <span class="m"><i>f</i>(' + FI + '(<i>x</i>)) = <i>x</i></span> u ' + v.n + ' tačaka, najveće odstupanje ' + (v.maxErr < 1e-15 ? 'manje od 10<sup>−15</sup>' : (function (e) { var m = e.toExponential(0).split('e'); return m[0] + '·10<sup>' + m[1].replace('-', '−') + '</sup>'; })(v.maxErr)) + ' (greška zaokruživanja). Sve karakteristične tačke leže na grafiku.</p>' +
+    html += '<section class="sec"><h3 class="h3"><span class="no">8</span>Provjera</h3><p class="okline">Provjereno računarom: <span class="m">' + FI + '(<i>f</i>(<i>x</i>)) = <i>x</i></span> i <span class="m"><i>f</i>(' + FI + '(<i>x</i>)) = <i>x</i></span> u ' + v.n + ' tačaka, najveće relativno odstupanje ' + (v.maxErr < 1e-15 ? 'manje od 10<sup>−15</sup>' : (function (e) { var m = e.toExponential(0).split('e'); return m[0] + '·10<sup>' + m[1].replace('-', '−') + '</sup>'; })(v.maxErr)) + ' (greška zaokruživanja). Sve karakteristične tačke leže na grafiku, a posljednji korak skiciranja daje baš f, odnosno f⁻¹.</p>' +
       whyHtml('Ova provjera hvata greške u formuli inverza. Ako bi provjera pala, rješavač ne bi prikazao rezultat, nego obavještenje. Na kolokvijumu istu provjeru možeš uraditi ručno: uvrsti jednu tačku iz tabele u f⁻¹ i vidi da li dobiješ njen x.') + '</section>';
     host.innerHTML = html;
-
-    var fig = host.querySelector('.stepfig'), cap = host.querySelector('.stepcap');
-    function show(i) {
-      var st = steps[i];
-      host.querySelectorAll('.sb').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.i == i ? 'true' : 'false'); });
-      fig.innerHTML = graphStep(r, i, swin);
-      cap.innerHTML = '<p class="stepeq m">' + st.eq + '</p><p>' + (st.skip ? '<span class="pill">preskače se</span> ' : '') + esc(st.desc) + '</p>' + (st.skip ? '' : whyHtml(st.why));
-    }
-    host.querySelectorAll('.sb').forEach(function (b) { b.onclick = function () { show(+b.dataset.i); }; });
-    show(steps.length - 1);
+    wireStepper(host, id1, r.steps, 'cf');
+    wireStepper(host, id2, r.isteps, 'ci');
   }
 
   /* ================= Rješavač ================= */
   function recognized(p) {
     var D = p.D;
-    return 'Prepoznato: g = ' + p.g + ', A = ' + E.fq(p.A) + ', B = ' + E.fq(p.B) + ', C = ' + E.fq(p.C) + ', D = ' + E.fp(D);
+    return 'Prepoznato: g = ' + p.g + ', A = ' + E.fq(p.A) + ', B = ' + E.fq(p.B) + ', C = ' + E.fp(p.C) + ', D = ' + E.fp(D);
   }
   function solveInput(src, silent) {
     var out = $('#out'), banner = $('#banner'), rec = $('#rec');
@@ -1555,7 +1686,8 @@ if (typeof module !== 'undefined') module.exports = Arcus;
     renderSolution(r, out);
     if (!silent) {
       p.notes.forEach(function (n) { notify('info', 'Kako je unos shvaćen', n); });
-      if (r.g === 'arcctg') notify('info', 'Dogovor za arcctg', 'Računam sa kodomenom arcctg = (0, π). Ako vaša skripta koristi drugi dogovor, kodomen i inverz se mijenjaju.', { once: 'arcctg' });
+      if (r.trig) notify('warn', 'Suženje domena', r.g + ' nije injektivna na cijelom ℝ, pa inverz postoji samo na dijelu domena. Uzeto je standardno suženje (argument u ' + ({ sin: '[−π/2, π/2]', cos: '[0, π]', tg: '(−π/2, π/2)', ctg: '(0, π)' })[r.g] + '). Ako zadatak zadaje drugi interval, rješenje se razlikuje.');
+      if (r.g === 'arcctg' || r.G === 'arcctg') notify('info', 'Dogovor za arcctg', 'Računam sa kodomenom arcctg = (0, π). Ako vaša skripta koristi drugi dogovor, kodomen i inverz se mijenjaju.', { once: 'arcctg' });
       if (r.points.some(function (t) { return !t.x.exact || !t.y.exact; })) notify('info', 'Približne vrijednosti', 'Neki presjek sa osom nije "lijep" broj, pa je dat približno (≈). Ostalo je izračunato tačno.', { once: 'approx' });
     }
     try { localStorage.setItem('arcus-last', src); } catch (e) { /* bez memorije */ }
@@ -1563,9 +1695,9 @@ if (typeof module !== 'undefined') module.exports = Arcus;
   }
 
   /* ================= Vježba ================= */
-  var current = null;
+  var current = null, exKind = 'all';
   function newExercise() {
-    var p = E.randomProblem(), r = E.solve(p);
+    var p = E.randomProblem(exKind), r = E.solve(p);
     if (!r.validation.ok) { notify('error', 'Zadatak preskočen', 'Generisani zadatak nije prošao provjeru, pa je napravljen novi.'); return newExercise(); }
     current = r;
     $('#ex-task').innerHTML = 'Skicirati funkciju <span class="m"><i>f</i>(<i>x</i>) = ' + r.fHtml + '</span>, te odrediti i skicirati inverznu funkciju.';
@@ -1578,26 +1710,37 @@ if (typeof module !== 'undefined') module.exports = Arcus;
 
   /* ================= Osnovna pravila ================= */
   function rulesGraphs() {
-    var host = $('#base-graphs');
-    var items = [
-      ['arcsin', 'sin suženi na [−π/2, π/2]', [-1, 1], [-PI / 2, PI / 2], true, 'rastuća', '[−1, 1]', '[−π/2, π/2]'],
-      ['arccos', 'cos suženi na [0, π]', [-1, 1], [0, PI], true, 'opadajuća', '[−1, 1]', '[0, π]'],
-      ['arctg', 'tg suženi na (−π/2, π/2)', null, [-PI / 2, PI / 2], false, 'rastuća', 'ℝ', '(−π/2, π/2)'],
-      ['arcctg', 'ctg suženi na (0, π)', null, [0, PI], false, 'opadajuća', 'ℝ', '(0, π)']
+    var P2 = PI / 2;
+    var arc = [
+      { g: 'arcsin', dom: [-1, 1], box: [-1, 1, -P2, P2], inv: 'sin suženi na [−π/2, π/2]', D: '[−1, 1]', K: '[−π/2, π/2]', tok: 'rastuća' },
+      { g: 'arccos', dom: [-1, 1], box: [-1, 1, 0, PI], inv: 'cos suženi na [0, π]', D: '[−1, 1]', K: '[0, π]', tok: 'opadajuća' },
+      { g: 'arctg', dom: null, box: [-4, 4, -P2, P2], hasym: [-P2, P2], inv: 'tg suženi na (−π/2, π/2)', D: 'ℝ', K: '(−π/2, π/2)', tok: 'rastuća' },
+      { g: 'arcctg', dom: null, box: [-4, 4, 0, PI], hasym: [0, PI], inv: 'ctg suženi na (0, π)', D: 'ℝ', K: '(0, π)', tok: 'opadajuća' }
     ];
-    host.innerHTML = items.map(function (it) {
-      var bs = E.BASE[it[0]];
-      var box = it[2] ? [-1, 1, it[3][0], it[3][1]] : [-4, 4, it[3][0], it[3][1]];
-      var win = makeWin(box, { maxRatio: 0.9, minRatio: 0.6 });
-      var xt = it[2] ? [{ v: -1, l: '−1', pri: 3 }, { v: 1, l: '1', pri: 3 }] : [{ v: -1, l: '−1', pri: 2 }, { v: 1, l: '1', pri: 2 }];
-      var yt = [{ v: it[3][0], l: fmtNum(it[3][0], true), pri: 3 }, { v: it[3][1], l: fmtNum(it[3][1], true), pri: 3 }];
-      if (it[0] === 'arccos' || it[0] === 'arcctg') yt.push({ v: PI / 2, l: 'π/2', pri: 2 });
-      if (!it[2]) { yt.push({ v: bs.num(1), l: fmtNum(bs.num(1), true), pri: 1 }); }
-      var svg = plot({ win: win, curves: [{ fn: bs.num, dom: it[2], ends: it[2] ? [true, true] : null, cls: 'cf' }], xt: xt, yt: yt,
-        hasym: it[2] ? [] : [{ v: it[3][0], cls: 'cf' }, { v: it[3][1], cls: 'cf' }], pts: [], label: 'Grafik ' + it[0] });
-      return '<figure class="card bfig"><figcaption><b>' + it[0] + '</b> x</figcaption>' + svg +
-        '<dl class="mini"><dt>D</dt><dd>' + it[6] + '</dd><dt>K</dt><dd>' + it[7] + '</dd><dt>tok</dt><dd>' + it[5] + '</dd><dt>inverz od</dt><dd>' + it[1] + '</dd></dl></figure>';
-    }).join('');
+    var trig = [
+      { g: 'sin', dom: [-P2, P2], closed: true, box: [-3.4, 3.4, -1.3, 1.3], D: 'luk: [−π/2, π/2]', K: '[−1, 1]', tok: 'rastuća na luku', inv: 'arcsin' },
+      { g: 'cos', dom: [0, PI], closed: true, box: [-2, 4.5, -1.3, 1.3], D: 'luk: [0, π]', K: '[−1, 1]', tok: 'opadajuća na luku', inv: 'arccos' },
+      { g: 'tg', dom: [-P2, P2], closed: false, box: [-3.4, 3.4, -3.5, 3.5], vasym: [-P2, P2], D: 'luk: (−π/2, π/2)', K: 'ℝ', tok: 'rastuća na luku', inv: 'arctg' },
+      { g: 'ctg', dom: [0, PI], closed: false, box: [-1.8, 4.8, -3.5, 3.5], vasym: [0, PI], D: 'luk: (0, π)', K: 'ℝ', tok: 'opadajuća na luku', inv: 'arcctg' }
+    ];
+    function card(it, isTrig) {
+      var fd = E.FUN[it.g], win = makeWin(it.box, { ratio: 0.72 });
+      var curves = [];
+      if (isTrig) curves.push({ fn: fd.num, dom: null, cls: 'cg' });
+      curves.push(it.dom ? { fn: fd.num, dom: it.dom, open: isTrig ? !it.closed : false, ends: isTrig && !it.closed ? null : [true, true], cls: 'cf' } : { fn: fd.num, dom: null, cls: 'cf' });
+      var xt = [], yt = [];
+      if (it.dom) { xt.push({ v: it.dom[0], l: fmtNum(it.dom[0], true), pri: 3 }); xt.push({ v: it.dom[1], l: fmtNum(it.dom[1], true), pri: 3 }); }
+      else { xt.push({ v: -1, l: '−1', pri: 2 }); xt.push({ v: 1, l: '1', pri: 2 }); }
+      if (isTrig) { yt.push({ v: 1, l: '1', pri: 3 }); yt.push({ v: -1, l: '−1', pri: 3 }); }
+      else { yt.push({ v: it.box[2], l: fmtNum(it.box[2], true), pri: 3 }); yt.push({ v: it.box[3], l: fmtNum(it.box[3], true), pri: 3 }); if (it.g === 'arccos' || it.g === 'arcctg') yt.push({ v: P2, l: 'π/2', pri: 2 }); }
+      (it.vasym || []).forEach(function (v) { xt.push({ v: v, l: fmtNum(v, true), pri: 4 }); });
+      var svg = plot({ win: win, curves: curves, xt: xt, yt: yt, pts: [],
+        hasym: (it.hasym || []).map(function (v) { return { v: v, cls: 'cf' }; }), vasym: (it.vasym || []).map(function (v) { return { v: v, cls: 'cf' }; }), label: 'Grafik ' + it.g });
+      return '<figure class="card bfig"><figcaption><b>' + it.g + '</b> x</figcaption>' + svg +
+        '<dl class="mini"><dt>D</dt><dd>' + it.D + '</dd><dt>K</dt><dd>' + it.K + '</dd><dt>tok</dt><dd>' + it.tok + '</dd><dt>' + (isTrig ? 'inverz' : 'inverz od') + '</dt><dd>' + it.inv + '</dd></dl></figure>';
+    }
+    $('#base-graphs').innerHTML = arc.map(function (it) { return card(it, false); }).join('');
+    $('#trig-graphs').innerHTML = trig.map(function (it) { return card(it, true); }).join('');
   }
 
   /* ================= Navigacija ================= */
@@ -1636,6 +1779,13 @@ if (typeof module !== 'undefined') module.exports = Arcus;
       b.addEventListener('click', function () { inp.value = b.dataset.f; solveInput(inp.value); });
     });
     $('#ex-new').onclick = newExercise;
+    document.querySelectorAll('.kind').forEach(function (b) {
+      b.onclick = function () {
+        exKind = b.dataset.kind;
+        document.querySelectorAll('.kind').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        newExercise();
+      };
+    });
     $('#ex-show').onclick = function () {
       var sol = $('#ex-sol');
       if (sol.hidden) { renderSolution(current, sol, { noSummary: true }); sol.hidden = false; this.textContent = 'Sakrij postupak'; this.setAttribute('aria-expanded', 'true'); }

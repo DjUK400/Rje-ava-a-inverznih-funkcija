@@ -1,5 +1,7 @@
 # Rješavač inverznih funkcija
 
+> Dio kolekcije **Aplikacije za fakultet**: https://djuk400.github.io/
+
 **Sajt:** https://djuk400.github.io/Rje-ava-a-inverznih-funkcija/
 
 Rješavač za 1. zadatak kolokvijuma iz matematike: *"Skicirati datu funkciju, te odrediti i skicirati inverznu funkciju."* Radi za arcus funkcije oblika **f(x) = A·g(Bx + C) + D**, gdje je g arcsin, arccos, arctg ili arcctg.
